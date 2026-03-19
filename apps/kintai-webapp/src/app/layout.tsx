@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "勤怠管理Webアプリ",
-  description: "勤怠データの集計・管理",
+  description: "イースタッフィング勤怠CSVの集計・datファイル変換",
 };
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body style={{ margin: 0, backgroundColor: "#ffffff" }}>{children}</body>
     </html>
   );
 }
