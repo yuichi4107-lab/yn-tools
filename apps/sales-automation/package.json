@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3001",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db push --skip-generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
@@ -16,6 +17,7 @@
     "react-dom": "^19.0.0",
     "@yn-tools/ui": "*",
     "@prisma/client": "^6.0.0",
+    "@vercel/postgres": "^0.10.0",
     "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
