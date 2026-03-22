@@ -1,7 +1,9 @@
-# Environment
+# Environment & Secrets
 .env
 .env.local
 .env.production
+keys.json
+keys.txt
 
 # Database
 *.db
