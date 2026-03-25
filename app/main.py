@@ -34,6 +34,11 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="sales", name="営業自動化", description="企業リスト・HP巡回・CRM・メール営業", monthly_price=100, display_order=1, icon_emoji="📼", stripe_product_id="prod_UDDIwP4jsIEPyk", stripe_price_id="price_1TEmrmKAVaivWwqwOO0NPLql"),
                 ToolDefinition(slug="mailer", name="メール送信", description="テンプレメール一括送信・履歴管理", monthly_price=100, display_order=2, icon_emoji="✉", stripe_product_id="prod_UDDISonnzcKLmO", stripe_price_id="price_1TEms7KAVaivWwqwabRK9pJb"),
                 ToolDefinition(slug="gems", name="GEMS/GPTライブラリ", description="AI業務改善プロンプト200本", monthly_price=100, display_order=3, icon_emoji="✨", stripe_product_id="prod_UDDKTlnnnfoPeR", stripe_price_id="price_1TEmtNKAVaivWwqwmeG7NnWK"),
+                ToolDefinition(slug="docai", name="AI文書処理", description="PDF・テキストをAIで要約・翻訳・Q&A・情報抽出", monthly_price=100, display_order=4, icon_emoji="📄"),
+                ToolDefinition(slug="contentgen", name="AIコンテンツ生成", description="SNS投稿・ブログ記事・広告コピー・メールをAI自動作成", monthly_price=100, display_order=5, icon_emoji="✍"),
+                ToolDefinition(slug="webresearch", name="AI Webリサーチャー", description="URLを入力→AIがページ分析・要約・競合比較", monthly_price=100, display_order=6, icon_emoji="🔍"),
+                ToolDefinition(slug="imagegen", name="AI画像生成", description="プロンプトからSNS画像・バナー・商品画像を一括生成", monthly_price=100, display_order=7, icon_emoji="🎨"),
+                ToolDefinition(slug="chatbot", name="AIチャットボットビルダー", description="自社サイトに埋め込めるAIチャットボットを作成・管理", monthly_price=100, display_order=8, icon_emoji="🤖"),
             ]
             db.add_all(tools)
             await db.commit()
@@ -58,6 +63,11 @@ from app.tools.mailer.router import router as mailer_router
 from app.tools.gems.router import router as gems_router
 from app.tools.sales.router import router as sales_router
 from app.community.router import router as community_router
+from app.tools.docai.router import router as docai_router
+from app.tools.contentgen.router import router as contentgen_router
+from app.tools.webresearch.router import router as webresearch_router
+from app.tools.imagegen.router import router as imagegen_router
+from app.tools.chatbot.router import router as chatbot_router
 
 app.include_router(auth_router)
 app.include_router(billing_router)
@@ -65,6 +75,11 @@ app.include_router(users_router)
 app.include_router(mailer_router)
 app.include_router(gems_router)
 app.include_router(sales_router)
+app.include_router(docai_router)
+app.include_router(contentgen_router)
+app.include_router(webresearch_router)
+app.include_router(imagegen_router)
+app.include_router(chatbot_router)
 app.include_router(community_router)
 
 templates = Jinja2Templates(directory="app/templates")

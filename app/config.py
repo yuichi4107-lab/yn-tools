@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     google_places_api_key: str = ""
     scraping_delay_sec: float = 2.0
 
+    # AI Document Processing (DocAI)
+    openai_api_key: str = ""
+
     # Trial
     trial_days: int = 30
 

@@ -30,6 +30,11 @@
         {"slug": "sales", "name": "営業自動化", "desc": "企業リスト・HP巡回・CRM・メール営業", "icon": "&#x1f4bc;", "bg": "indigo"},
         {"slug": "mailer", "name": "メール送信", "desc": "テンプレメール一括送信・履歴管理", "icon": "&#x2709;", "bg": "green"},
         {"slug": "gems", "name": "GEMS/GPTライブラリ", "desc": "AI業務改善プロンプト200本", "icon": "&#x2728;", "bg": "purple"},
+        {"slug": "docai", "name": "AI文書処理", "desc": "PDF・テキストをAIで要約・翻訳・Q&A・情報抽出", "icon": "&#x1f4c4;", "bg": "sky"},
+        {"slug": "contentgen", "name": "AIコンテンツ生成", "desc": "SNS投稿・ブログ記事・広告コピー・メールをAI自動作成", "icon": "&#x270d;", "bg": "rose"},
+        {"slug": "webresearch", "name": "AI Webリサーチャー", "desc": "URLを入力→AIがページ分析・要約・競合比較", "icon": "&#x1f50d;", "bg": "teal"},
+        {"slug": "imagegen", "name": "AI画像生成", "desc": "プロンプトからSNS画像・バナー・商品画像を一括生成", "icon": "&#x1f3a8;", "bg": "amber"},
+        {"slug": "chatbot", "name": "AIチャットボット", "desc": "自社サイトに埋め込めるAIチャットボットを作成・管理", "icon": "&#x1f916;", "bg": "cyan"},
     ] %}
     {% for card in tool_cards %}
     {% set has_access = user.has_full_access or card.slug in subscribed_tools %}
