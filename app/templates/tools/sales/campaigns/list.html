@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}キャンペーン - 営業自動化 - YN Tools{% endblock %}
+{% block title %}メール送信 - 営業自動化 - YN Tools{% endblock %}
 
 {% block content %}
 <div class="mb-6 flex items-center justify-between">
     <div>
-        <h1 class="text-2xl font-bold text-gray-900">メールキャンペーン</h1>
+        <h1 class="text-2xl font-bold text-gray-900">メールメール送信</h1>
         <p class="text-gray-500 mt-1">未営業企業: {{ unsent_count }} 件</p>
     </div>
     <div class="flex gap-2">
-        <a href="{{ P }}/campaigns/new" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">新規キャンペーン</a>
+        <a href="{{ P }}/campaigns/new" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">新規メール送信</a>
         <a href="{{ P }}/" class="text-sm text-gray-600 hover:text-gray-900 px-3 py-2">ダッシュボード</a>
     </div>
 </div>
@@ -34,8 +34,8 @@
 </div>
 {% else %}
 <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
-    <p class="text-gray-400 mb-4">キャンペーンがありません</p>
-    <a href="{{ P }}/campaigns/new" class="text-indigo-600 hover:underline text-sm">最初のキャンペーンを作成する</a>
+    <p class="text-gray-400 mb-4">メール送信がありません</p>
+    <a href="{{ P }}/campaigns/new" class="text-indigo-600 hover:underline text-sm">最初のメール送信を作成する</a>
 </div>
 {% endif %}
 {% endblock %}

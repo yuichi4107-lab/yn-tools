@@ -12,7 +12,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import require_active_plan
+from app.auth.dependencies import require_tool_access
 from app.database import get_db
 from app.tools.mailer.models import (
     MailerContact,
@@ -41,7 +41,7 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 @router.get("/", response_class=HTMLResponse)
 async def index(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     tpls = (await db.execute(
@@ -50,15 +50,15 @@ async def index(
     contacts = (await db.execute(
         select(MailerContact).where(MailerContact.user_id == user.id).order_by(MailerContact.name)
     )).scalars().all()
-    return templates.TemplateResponse("tools/mailer/index.html", {
-        "request": request, "user": user, "templates": tpls, "contacts": contacts, "page": "send",
+    return templates.TemplateResponse(request, "tools/mailer/index.html", {
+        "user": user, "templates": tpls, "contacts": contacts, "page": "send",
     })
 
 
 @router.get("/api/template/{template_id}")
 async def api_template(
     template_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -74,7 +74,7 @@ async def api_template(
 @router.post("/preview", response_class=HTMLResponse)
 async def preview(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
 ):
     form = await request.form()
     template_id = form.get("template_id", "")
@@ -105,8 +105,8 @@ async def preview(
     }
 
     attachment_names = [Path(a).name for a in saved_uploads]
-    return templates.TemplateResponse("tools/mailer/preview.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/mailer/preview.html", {
+        "user": user,
         "subject": subject, "body": body,
         "recipient_email": recipient_email, "recipient_name": recipient_name,
         "attachment_names": attachment_names, "page": "send",
@@ -116,7 +116,7 @@ async def preview(
 @router.post("/send")
 async def send(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     pending = request.session.pop("pending_send", None)
@@ -160,7 +160,7 @@ async def send(
 @router.get("/bulk", response_class=HTMLResponse)
 async def bulk(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     tpls = (await db.execute(
@@ -169,15 +169,15 @@ async def bulk(
     contacts = (await db.execute(
         select(MailerContact).where(MailerContact.user_id == user.id).order_by(MailerContact.name)
     )).scalars().all()
-    return templates.TemplateResponse("tools/mailer/bulk.html", {
-        "request": request, "user": user, "templates": tpls, "contacts": contacts, "page": "bulk",
+    return templates.TemplateResponse(request, "tools/mailer/bulk.html", {
+        "user": user, "templates": tpls, "contacts": contacts, "page": "bulk",
     })
 
 
 @router.post("/bulk/preview", response_class=HTMLResponse)
 async def bulk_preview(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     form = await request.form()
@@ -221,8 +221,8 @@ async def bulk_preview(
         "delay": delay,
     }
 
-    return templates.TemplateResponse("tools/mailer/bulk_preview.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/mailer/bulk_preview.html", {
+        "user": user,
         "template": template, "preview_items": preview_items,
         "attachment_names": [], "delay": delay, "page": "bulk",
     })
@@ -231,7 +231,7 @@ async def bulk_preview(
 @router.post("/bulk/send", response_class=HTMLResponse)
 async def bulk_send(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     pending = request.session.pop("pending_bulk", None)
@@ -289,8 +289,8 @@ async def bulk_send(
     sent = sum(1 for r in results if r["status"] == "success")
     failed = sum(1 for r in results if r["status"] == "error")
 
-    return templates.TemplateResponse("tools/mailer/bulk_results.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/mailer/bulk_results.html", {
+        "user": user,
         "results": results, "sent": sent, "failed": failed, "total": len(results), "page": "bulk",
     })
 
@@ -301,22 +301,22 @@ async def bulk_send(
 @router.get("/contacts", response_class=HTMLResponse)
 async def contacts_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
         select(MailerContact).where(MailerContact.user_id == user.id).order_by(MailerContact.name)
     )
     contacts = result.scalars().all()
-    return templates.TemplateResponse("tools/mailer/contacts.html", {
-        "request": request, "user": user, "contacts": contacts, "page": "contacts",
+    return templates.TemplateResponse(request, "tools/mailer/contacts.html", {
+        "user": user, "contacts": contacts, "page": "contacts",
     })
 
 
 @router.post("/contacts/add")
 async def contacts_add(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
     email: str = Form(...),
     name: str = Form(""),
@@ -332,7 +332,7 @@ async def contacts_add(
 @router.post("/contacts/edit/{contact_id}")
 async def contacts_edit(
     contact_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
     email: str = Form(...),
     name: str = Form(""),
@@ -356,7 +356,7 @@ async def contacts_edit(
 @router.post("/contacts/delete/{contact_id}")
 async def contacts_delete(
     contact_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -372,7 +372,7 @@ async def contacts_delete(
 @router.post("/contacts/import")
 async def contacts_import(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     form = await request.form()
@@ -406,28 +406,28 @@ async def contacts_import(
 @router.get("/templates", response_class=HTMLResponse)
 async def templates_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
         select(MailerTemplate).where(MailerTemplate.user_id == user.id).order_by(MailerTemplate.updated_at.desc())
     )
     tpls = result.scalars().all()
-    return templates.TemplateResponse("tools/mailer/templates_list.html", {
-        "request": request, "user": user, "mail_templates": tpls, "page": "templates",
+    return templates.TemplateResponse(request, "tools/mailer/templates_list.html", {
+        "user": user, "mail_templates": tpls, "page": "templates",
     })
 
 
 @router.get("/templates/new", response_class=HTMLResponse)
-async def templates_new(request: Request, user: User = Depends(require_active_plan)):
-    return templates.TemplateResponse("tools/mailer/templates_form.html", {
-        "request": request, "user": user, "mode": "new", "page": "templates",
+async def templates_new(request: Request, user: User = Depends(require_tool_access("mailer"))):
+    return templates.TemplateResponse(request, "tools/mailer/templates_form.html", {
+        "user": user, "mode": "new", "page": "templates",
     })
 
 
 @router.post("/templates/new")
 async def templates_create(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
     name: str = Form(...),
     subject: str = Form(...),
@@ -443,7 +443,7 @@ async def templates_create(
 async def templates_edit_page(
     template_id: int,
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -453,15 +453,15 @@ async def templates_edit_page(
     if not tpl:
         return RedirectResponse(url="/tools/mailer/templates?msg=not_found", status_code=303)
     placeholders = extract_placeholders(tpl.subject + tpl.body)
-    return templates.TemplateResponse("tools/mailer/templates_form.html", {
-        "request": request, "user": user, "mode": "edit", "template": tpl, "placeholders": placeholders, "page": "templates",
+    return templates.TemplateResponse(request, "tools/mailer/templates_form.html", {
+        "user": user, "mode": "edit", "template": tpl, "placeholders": placeholders, "page": "templates",
     })
 
 
 @router.post("/templates/edit/{template_id}")
 async def templates_update(
     template_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
     name: str = Form(...),
     subject: str = Form(...),
@@ -483,7 +483,7 @@ async def templates_update(
 @router.post("/templates/delete/{template_id}")
 async def templates_delete(
     template_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -499,7 +499,7 @@ async def templates_delete(
 @router.post("/templates/duplicate/{template_id}")
 async def templates_duplicate(
     template_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -524,7 +524,7 @@ async def templates_duplicate(
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -532,15 +532,15 @@ async def settings_page(
     )
     config = result.scalar_one_or_none()
     has_password = bool(config and config.password_encrypted)
-    return templates.TemplateResponse("tools/mailer/settings.html", {
-        "request": request, "user": user, "config": config, "has_password": has_password, "page": "settings",
+    return templates.TemplateResponse(request, "tools/mailer/settings.html", {
+        "user": user, "config": config, "has_password": has_password, "page": "settings",
     })
 
 
 @router.post("/settings")
 async def settings_save(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     form = await request.form()
@@ -570,7 +570,7 @@ async def settings_save(
 
 @router.post("/settings/test")
 async def settings_test(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -596,7 +596,7 @@ async def settings_test(
 @router.get("/history", response_class=HTMLResponse)
 async def history_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("mailer")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -606,8 +606,8 @@ async def history_list(
         .limit(500)
     )
     records = result.scalars().all()
-    return templates.TemplateResponse("tools/mailer/history.html", {
-        "request": request, "user": user, "history": records, "page": "history",
+    return templates.TemplateResponse(request, "tools/mailer/history.html", {
+        "user": user, "history": records, "page": "history",
     })
 
 

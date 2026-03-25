@@ -10,7 +10,7 @@
     </h1>
     <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay:100ms">
         営業自動化、メール一括送信、AIプロンプトライブラリ。<br class="hidden sm:block">
-        すべてのツールを1つのアカウントで。
+        必要なツールだけ選んで、すぐに始められます。
     </p>
     <div class="animate-fade-in-up" style="animation-delay:200ms">
         <a href="/auth/google" class="inline-flex items-center bg-white border-2 border-gray-300 rounded-xl px-6 py-3 text-lg font-medium text-gray-700 hover:bg-gray-50 hover:border-indigo-400 hover:shadow-md transition-all">
@@ -23,8 +23,8 @@
 
 <!-- Tools -->
 <div class="py-12">
-    <h2 class="text-2xl md:text-3xl font-bold text-center mb-3">3つのツールが月額500円で使い放題</h2>
-    <p class="text-gray-500 text-center mb-10">どれか1つでも使えば元が取れます</p>
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-3">必要なツールだけ選んで使える</h2>
+    <p class="text-gray-500 text-center mb-10">1ツール月額100円から。全ツールでも月額2,000円。</p>
     <div class="grid md:grid-cols-3 gap-6">
         <div class="bg-white rounded-xl shadow-sm border p-8 text-center card-hover stagger-item">
             <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">&#x1f4bc;</div>
@@ -34,8 +34,9 @@
                 <li>&#x2713; Google Maps企業検索</li>
                 <li>&#x2713; HP自動巡回・メール収集</li>
                 <li>&#x2713; CRM・営業パイプライン</li>
-                <li>&#x2713; メールキャンペーン一括送信</li>
+                <li>&#x2713; メール一括送信</li>
             </ul>
+            <p class="text-indigo-600 font-bold text-sm mt-4">&yen;100/月</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border p-8 text-center card-hover stagger-item">
             <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">&#x2709;</div>
@@ -47,6 +48,7 @@
                 <li>&#x2713; 送信履歴・ログ</li>
                 <li>&#x2713; 連絡先CSV管理</li>
             </ul>
+            <p class="text-indigo-600 font-bold text-sm mt-4">&yen;100/月</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border p-8 text-center card-hover stagger-item">
             <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">&#x2728;</div>
@@ -58,6 +60,7 @@
                 <li>&#x2713; カテゴリ・レベル別検索</li>
                 <li>&#x2713; ワンクリックダウンロード</li>
             </ul>
+            <p class="text-indigo-600 font-bold text-sm mt-4">&yen;100/月</p>
         </div>
     </div>
 </div>
@@ -78,34 +81,44 @@
         </div>
         <div class="text-center stagger-item">
             <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold mx-auto mb-3">3</div>
-            <h3 class="font-bold mb-1">月500円で継続</h3>
-            <p class="text-sm text-gray-500">気に入ったらそのまま継続。いつでも解約OK。</p>
+            <h3 class="font-bold mb-1">使いたいツールを選ぶ</h3>
+            <p class="text-sm text-gray-500">1ツール100円/月から。全ツールでも2,000円/月。</p>
         </div>
     </div>
 </div>
 
 <!-- Pricing -->
 <div class="py-12 text-center" id="pricing">
-    <h2 class="text-2xl md:text-3xl font-bold mb-3">シンプルな料金プラン</h2>
-    <p class="text-gray-500 mb-8">プランは1つだけ。全機能が使えます。</p>
-    <div class="max-w-sm mx-auto bg-white rounded-xl shadow-md border overflow-hidden card-hover">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-6">
-            <p class="text-sm opacity-80">まずは1ヶ月無料</p>
-            <p class="text-5xl font-bold mt-1">&yen;500<span class="text-lg font-normal opacity-80">/月</span></p>
-        </div>
-        <div class="p-6 text-left">
-            <ul class="space-y-3 text-gray-700 text-sm">
-                <li class="flex items-center"><span class="text-green-500 mr-2 text-lg">&#x2713;</span> 全ツール使い放題</li>
-                <li class="flex items-center"><span class="text-green-500 mr-2 text-lg">&#x2713;</span> 1ヶ月間無料トライアル</li>
-                <li class="flex items-center"><span class="text-green-500 mr-2 text-lg">&#x2713;</span> コミュニティアクセス</li>
-                <li class="flex items-center"><span class="text-green-500 mr-2 text-lg">&#x2713;</span> 新ツール追加時も追加料金なし</li>
-                <li class="flex items-center"><span class="text-green-500 mr-2 text-lg">&#x2713;</span> いつでもキャンセル可能</li>
+    <h2 class="text-2xl md:text-3xl font-bold mb-3">料金プラン</h2>
+    <p class="text-gray-500 mb-8">必要なツールだけ選んで、すぐに始められます</p>
+    <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+        <!-- 従量制 -->
+        <div class="bg-white rounded-xl shadow-sm border p-6 card-hover text-left">
+            <h3 class="font-bold text-lg mb-1">従量制プラン</h3>
+            <p class="text-3xl font-bold text-gray-900">&yen;100<span class="text-sm font-normal text-gray-500">/ツール/月</span></p>
+            <ul class="text-sm text-gray-600 mt-4 space-y-2">
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> 使いたいツールだけ選べる</li>
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> いつでもツール追加・解除OK</li>
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> コミュニティアクセス</li>
             </ul>
-            <a href="/auth/google" class="block mt-6 bg-indigo-600 text-white text-center py-3 rounded-lg hover:bg-indigo-700 transition font-medium">
-                無料で始める
-            </a>
+        </div>
+        <!-- 全ツール -->
+        <div class="bg-white rounded-xl shadow-md border-2 border-indigo-500 p-6 card-hover text-left relative">
+            <div class="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">おすすめ</div>
+            <h3 class="font-bold text-lg mb-1">全ツールプラン</h3>
+            <p class="text-3xl font-bold text-indigo-600">&yen;2,000<span class="text-sm font-normal text-gray-500">/月</span></p>
+            <ul class="text-sm text-gray-600 mt-4 space-y-2">
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> 全ツール使い放題</li>
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> 新ツール追加時も追加料金なし</li>
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> コミュニティアクセス</li>
+                <li class="flex items-center"><span class="text-green-500 mr-2">&#x2713;</span> いつでもキャンセル可能</li>
+            </ul>
         </div>
     </div>
+    <a href="/auth/google" class="inline-block mt-8 bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-medium">
+        まずは1ヶ月無料で試す
+    </a>
+    <p class="text-gray-400 text-xs mt-3">クレジットカード不要。1ヶ月間すべてのツールをお試しいただけます。</p>
 </div>
 
 <!-- FAQ -->
@@ -128,17 +141,17 @@
         </details>
         <details class="bg-white rounded-lg border p-4 group">
             <summary class="font-medium text-gray-900 cursor-pointer flex items-center justify-between">
-                データはどこに保存されますか？
+                1つのツールだけ使うことはできますか？
                 <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </summary>
-            <p class="text-sm text-gray-500 mt-2">すべてのデータはセキュアなクラウドサーバー上に暗号化して保存されます。他のユーザーからアクセスされることはありません。</p>
+            <p class="text-sm text-gray-500 mt-2">はい、従量制プランなら必要なツールだけ選んでご利用いただけます。1ツール月額100円です。</p>
         </details>
         <details class="bg-white rounded-lg border p-4 group">
             <summary class="font-medium text-gray-900 cursor-pointer flex items-center justify-between">
                 今後ツールは増えますか？
                 <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </summary>
-            <p class="text-sm text-gray-500 mt-2">はい、コミュニティの投票で人気のあるツールから順次追加していきます。追加料金はかかりません。</p>
+            <p class="text-sm text-gray-500 mt-2">はい、コミュニティの投票で人気のあるツールから順次追加していきます。全ツールプランなら追加料金なしでご利用いただけます。</p>
         </details>
     </div>
 </div>

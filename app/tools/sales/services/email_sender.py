@@ -131,7 +131,7 @@ async def send_bulk_campaign(
 ) -> dict:
     campaign = await db.get(SalesCampaign, campaign_id)
     if not campaign:
-        return {"status": "error", "reason": "キャンペーンが見つかりません"}
+        return {"status": "error", "reason": "メール送信設定が見つかりません"}
 
     query = (
         select(SalesCompany)

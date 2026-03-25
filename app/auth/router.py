@@ -23,7 +23,7 @@ async def login_page(request: Request):
     user_id = request.session.get("user_id")
     if user_id:
         return RedirectResponse(url="/dashboard", status_code=303)
-    return templates.TemplateResponse("auth/login.html", {"request": request})
+    return templates.TemplateResponse(request, "auth/login.html", {})
 
 
 @router.get("/google")

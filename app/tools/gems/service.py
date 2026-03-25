@@ -120,7 +120,8 @@ async def seed_gems_items(db: AsyncSession) -> int:
 async def get_categories(db: AsyncSession) -> list[str]:
     """Get distinct categories."""
     result = await db.execute(
-        select(GemsItem.category).distinct().order_by(GemsItem.category)
+        select(GemsItem.category).where(GemsItem.level != "beginner")
+        .distinct().order_by(GemsItem.category)
     )
     return [r for r in result.scalars().all() if r]
 
@@ -128,16 +129,13 @@ async def get_categories(db: AsyncSession) -> list[str]:
 async def search_items(
     db: AsyncSession,
     item_type: str | None = None,
-    level: str | None = None,
     category: str | None = None,
     q: str | None = None,
 ) -> list[GemsItem]:
     """Search/filter GEMS/GPT items."""
-    stmt = select(GemsItem)
+    stmt = select(GemsItem).where(GemsItem.level != "beginner")
     if item_type:
         stmt = stmt.where(GemsItem.item_type == item_type)
-    if level:
-        stmt = stmt.where(GemsItem.level == level)
     if category:
         stmt = stmt.where(GemsItem.category == category)
     if q:

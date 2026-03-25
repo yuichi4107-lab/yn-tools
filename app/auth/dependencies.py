@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.users.models import User
+from app.users.models import User, UserToolSubscription
 
 
 async def get_current_user(
@@ -36,6 +36,35 @@ async def require_active_plan(
     if user.has_active_plan:
         return user
     raise HTTPException(status_code=402, detail="plan_expired")
+
+
+def require_tool_access(tool_slug: str):
+    """Factory that returns a dependency checking access to a specific tool."""
+
+    async def _check(
+        request: Request,
+        user: User = Depends(require_login),
+        db: AsyncSession = Depends(get_db),
+    ) -> User:
+        # トライアル中 or 全ツールプラン or 旧Pro → 全ツールOK
+        if user.has_full_access:
+            return user
+
+        # 個別ツールの購読チェック
+        if user.plan == "per_tool":
+            result = await db.execute(
+                select(UserToolSubscription).where(
+                    UserToolSubscription.user_id == user.id,
+                    UserToolSubscription.tool_slug == tool_slug,
+                    UserToolSubscription.is_active == True,
+                )
+            )
+            if result.scalar_one_or_none():
+                return user
+
+        raise HTTPException(status_code=402, detail="tool_not_subscribed")
+
+    return _check
 
 
 async def require_admin(

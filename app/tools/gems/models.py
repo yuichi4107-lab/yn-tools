@@ -25,6 +25,7 @@ class GemsItem(Base):
     conversation_starters: Mapped[str] = mapped_column(Text, default="")
     feature_settings: Mapped[str] = mapped_column(Text, default="")  # GPT only
     usage_guide: Mapped[str] = mapped_column(Text, default="")
+    share_url: Mapped[str] = mapped_column(String(500), default="")  # Gem/GPT共有リンク
     download_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 

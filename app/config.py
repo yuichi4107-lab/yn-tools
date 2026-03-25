@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_publishable_key: str = ""
     stripe_webhook_secret: str = ""
-    stripe_price_id: str = ""
+    stripe_price_all_tools: str = ""  # 全ツールプラン (2,000円/月)
 
     # Mailer tool
     encryption_key: str = ""  # Fernet key for SMTP password encryption

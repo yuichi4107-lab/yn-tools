@@ -14,7 +14,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.auth.dependencies import require_active_plan
+from app.auth.dependencies import require_tool_access
 from app.database import get_db
 from app.tools.sales.models import (
     SalesCampaign, SalesCompany, SalesContact,
@@ -39,7 +39,7 @@ P = "/tools/sales"  # URL prefix shorthand
 @router.get("/", response_class=HTMLResponse)
 async def dashboard(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     uid = user.id
@@ -124,8 +124,8 @@ async def dashboard(
         )
     )).scalar() or 0
 
-    return templates.TemplateResponse("tools/sales/dashboard.html", {
-        "request": request, "user": user, "page": "sales",
+    return templates.TemplateResponse(request, "tools/sales/dashboard.html", {
+        "user": user, "page": "sales",
         "total_companies": total, "total_with_email": with_email,
         "total_with_form": with_form, "avg_score": round(avg_score),
         "with_url": with_url, "crawled_count": crawled_count,
@@ -143,7 +143,7 @@ async def dashboard(
 @router.get("/companies", response_class=HTMLResponse)
 async def companies_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1),
     search: str = Query(""),
@@ -168,31 +168,31 @@ async def companies_list(
     query = query.order_by(SalesCompany.id.desc()).offset((page - 1) * per_page).limit(per_page)
     companies = (await db.execute(query)).scalars().all()
 
-    return templates.TemplateResponse("tools/sales/companies/list.html", {
-        "request": request, "user": user, "page_num": page, "per_page": per_page,
+    return templates.TemplateResponse(request, "tools/sales/companies/list.html", {
+        "user": user, "page_num": page, "per_page": per_page,
         "search": search, "total": total, "companies": companies, "P": P,
     })
 
 
 @router.get("/companies/search", response_class=HTMLResponse)
-async def companies_search_page(request: Request, user: User = Depends(require_active_plan)):
-    return templates.TemplateResponse("tools/sales/companies/search.html", {
-        "request": request, "user": user, "P": P,
+async def companies_search_page(request: Request, user: User = Depends(require_tool_access("sales"))):
+    return templates.TemplateResponse(request, "tools/sales/companies/search.html", {
+        "user": user, "P": P,
     })
 
 
 @router.post("/companies/search", response_class=HTMLResponse)
 async def companies_search_action(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     query: str = Form(...),
     region: str = Form(""),
     max_results: int = Form(20),
 ):
     saved = await search_and_save(db, query, region, max_results, user_id=user.id)
-    return templates.TemplateResponse("tools/sales/companies/search_results.html", {
-        "request": request, "user": user, "companies": saved,
+    return templates.TemplateResponse(request, "tools/sales/companies/search_results.html", {
+        "user": user, "companies": saved,
         "query": query, "region": region, "P": P,
     })
 
@@ -200,7 +200,7 @@ async def companies_search_action(
 @router.get("/companies/{company_id}", response_class=HTMLResponse)
 async def company_detail(
     request: Request, company_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -211,15 +211,15 @@ async def company_detail(
     company = result.scalar_one_or_none()
     if not company:
         return HTMLResponse("Not Found", status_code=404)
-    return templates.TemplateResponse("tools/sales/companies/detail.html", {
-        "request": request, "user": user, "company": company, "P": P,
+    return templates.TemplateResponse(request, "tools/sales/companies/detail.html", {
+        "user": user, "company": company, "P": P,
     })
 
 
 @router.post("/companies/{company_id}/crawl", response_class=HTMLResponse)
 async def company_crawl(
     request: Request, company_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -287,7 +287,7 @@ async def company_crawl(
 @router.get("/crm", response_class=HTMLResponse)
 async def crm_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     status: str = Query(""),
     sort: str = Query("score_desc"),
@@ -345,8 +345,8 @@ async def crm_list(
         .where(SalesCompany.user_id == uid, SalesCrmStatus.is_blacklisted == True)
     )).scalar() or 0
 
-    return templates.TemplateResponse("tools/sales/crm/list.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/crm/list.html", {
+        "user": user,
         "companies": companies, "statuses": statuses,
         "status_counts": status_counts, "blacklist_count": blacklist_count,
         "current_status": status, "current_sort": sort, "search": search,
@@ -357,7 +357,7 @@ async def crm_list(
 @router.post("/crm/{company_id}/status")
 async def crm_update_status(
     request: Request, company_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     new_status: str = Form(...),
 ):
@@ -377,7 +377,7 @@ async def crm_update_status(
 @router.post("/crm/{company_id}/memo")
 async def crm_update_memo(
     company_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     memo: str = Form(""),
 ):
@@ -396,7 +396,7 @@ async def crm_update_memo(
 @router.post("/crm/{company_id}/blacklist")
 async def crm_toggle_blacklist(
     company_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -417,7 +417,7 @@ async def crm_toggle_blacklist(
 @router.get("/campaigns", response_class=HTMLResponse)
 async def campaigns_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     uid = user.id
@@ -440,23 +440,23 @@ async def campaigns_list(
         .where(SalesCompany.user_id == uid, SalesCrmStatus.status == "未営業")
     )).scalar() or 0
 
-    return templates.TemplateResponse("tools/sales/campaigns/list.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/campaigns/list.html", {
+        "user": user,
         "campaigns": campaigns, "campaign_stats": campaign_stats,
         "unsent_count": unsent, "P": P,
     })
 
 
 @router.get("/campaigns/new", response_class=HTMLResponse)
-async def campaign_new_page(request: Request, user: User = Depends(require_active_plan)):
-    return templates.TemplateResponse("tools/sales/campaigns/new.html", {
-        "request": request, "user": user, "P": P,
+async def campaign_new_page(request: Request, user: User = Depends(require_tool_access("sales"))):
+    return templates.TemplateResponse(request, "tools/sales/campaigns/new.html", {
+        "user": user, "P": P,
     })
 
 
 @router.post("/campaigns/new")
 async def campaign_create(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     name: str = Form(...),
     subject_template: str = Form(...),
@@ -474,7 +474,7 @@ async def campaign_create(
 @router.get("/campaigns/{campaign_id}", response_class=HTMLResponse)
 async def campaign_detail(
     request: Request, campaign_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     campaign = (await db.execute(
@@ -494,8 +494,8 @@ async def campaign_detail(
     sent_count = sum(1 for l in logs if l.status == "sent")
     failed_count = sum(1 for l in logs if l.status == "failed")
 
-    return templates.TemplateResponse("tools/sales/campaigns/detail.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/campaigns/detail.html", {
+        "user": user,
         "campaign": campaign, "logs": logs,
         "sent_count": sent_count, "failed_count": failed_count, "P": P,
     })
@@ -504,7 +504,7 @@ async def campaign_detail(
 @router.post("/campaigns/{campaign_id}/edit")
 async def campaign_edit(
     campaign_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     name: str = Form(...),
     status: str = Form("draft"),
@@ -528,15 +528,15 @@ async def campaign_edit(
 @router.post("/campaigns/{campaign_id}/send", response_class=HTMLResponse)
 async def campaign_send(
     request: Request, campaign_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     mode: str = Form("dry_run"),
 ):
     dry_run = mode != "send"
     result = await send_bulk_campaign(db, campaign_id, user_id=user.id, dry_run=dry_run)
 
-    return templates.TemplateResponse("tools/sales/campaigns/send_results.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/campaigns/send_results.html", {
+        "user": user,
         "result": result, "campaign_id": campaign_id, "P": P,
     })
 
@@ -547,7 +547,7 @@ async def campaign_send(
 @router.get("/scraper", response_class=HTMLResponse)
 async def scraper_index(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
 ):
     uid = user.id
@@ -570,8 +570,8 @@ async def scraper_index(
 
     uncrawled = with_url - crawled if with_url > crawled else 0
 
-    return templates.TemplateResponse("tools/sales/scraper/index.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/scraper/index.html", {
+        "user": user,
         "total": total, "with_url": with_url, "uncrawled": uncrawled, "P": P,
     })
 
@@ -579,14 +579,14 @@ async def scraper_index(
 @router.post("/scraper/bulk", response_class=HTMLResponse)
 async def scraper_bulk(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     mode: str = Form("uncrawled"),
 ):
     only_uncrawled = mode == "uncrawled"
     result = await bulk_crawl(db, user_id=user.id, only_uncrawled=only_uncrawled)
-    return templates.TemplateResponse("tools/sales/scraper/results.html", {
-        "request": request, "user": user, "result": result, "P": P,
+    return templates.TemplateResponse(request, "tools/sales/scraper/results.html", {
+        "user": user, "result": result, "P": P,
     })
 
 
@@ -595,7 +595,7 @@ async def scraper_bulk(
 # ===========================================================================
 @router.get("/export/csv")
 async def export_csv_route(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     status: str = Query(""),
 ):
@@ -610,7 +610,7 @@ async def export_csv_route(
 
 @router.get("/export/excel")
 async def export_excel_route(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     status: str = Query(""),
 ):
@@ -628,7 +628,7 @@ async def export_excel_route(
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     message: str = Query(""),
     error: str = Query(""),
@@ -644,15 +644,15 @@ async def settings_page(
         "smtp_password": cfg.smtp_password if cfg else "",
         "smtp_from_name": cfg.smtp_from_name if cfg else "",
     }
-    return templates.TemplateResponse("tools/sales/settings/index.html", {
-        "request": request, "user": user,
+    return templates.TemplateResponse(request, "tools/sales/settings/index.html", {
+        "user": user,
         "smtp": smtp, "message": message, "error": error, "P": P,
     })
 
 
 @router.post("/settings/smtp")
 async def settings_smtp_save(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     smtp_host: str = Form(""),
     smtp_port: str = Form("465"),
@@ -685,7 +685,7 @@ async def settings_smtp_save(
 
 @router.post("/settings/smtp/test")
 async def settings_smtp_test(
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("sales")),
     db: AsyncSession = Depends(get_db),
     test_to: str = Form(...),
 ):

@@ -24,28 +24,75 @@
     <!-- Plan -->
     <div class="bg-white rounded-xl shadow-sm border p-6 mb-5">
         <h2 class="font-bold text-lg mb-4">プラン</h2>
-        {% if user.plan == "pro" %}
-        <div class="flex items-center justify-between">
+
+        {% if user.plan == "all_tools" %}
+        <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-3">
-                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">Pro</span>
+                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">全ツールプラン</span>
+                <span class="text-gray-600 text-sm">月額 &yen;2,000</span>
+            </div>
+        </div>
+        <p class="text-gray-500 text-sm mb-4">すべてのツールが使い放題です。</p>
+
+        {% elif user.plan == "pro" %}
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">Pro プラン</span>
                 <span class="text-gray-600 text-sm">月額 &yen;500</span>
             </div>
-            <a href="/billing/portal" class="text-indigo-600 hover:underline text-sm">サブスク管理</a>
         </div>
+        <p class="text-gray-500 text-sm mb-4">すべてのツールが利用可能です（旧料金体系）。</p>
+
+        {% elif user.plan == "per_tool" %}
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">従量制プラン</span>
+                <span class="text-gray-600 text-sm">月額 &yen;{{ subscribed_tools | length * 100 }}</span>
+            </div>
+        </div>
+        {% if subscribed_tools %}
+        <div class="mb-4">
+            <p class="text-sm text-gray-500 mb-2">利用中のツール:</p>
+            <div class="flex flex-wrap gap-2">
+                {% for slug in subscribed_tools %}
+                <span class="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">{{ tool_names.get(slug, slug) }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         {% elif user.trial_remaining_days is not none and user.trial_remaining_days > 0 %}
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-3">
                 <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">無料トライアル</span>
                 <span class="text-gray-600 text-sm">残り {{ user.trial_remaining_days }} 日</span>
             </div>
-            <a href="/billing/upgrade" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 transition">アップグレード</a>
         </div>
+        <p class="text-gray-500 text-sm mb-4">すべてのツールを無料でお試しいただけます。</p>
+
         {% else %}
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-3">
             <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">Free（期限切れ）</span>
-            <a href="/billing/upgrade" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 transition">アップグレード</a>
         </div>
+        <p class="text-gray-500 text-sm mb-4">プランを選択してツールの利用を再開できます。</p>
         {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-3 pt-3 border-t">
+            <a href="/account/plan" class="px-4 py-2 text-sm text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition">
+                {% if user.plan in ("all_tools", "pro", "per_tool") %}プラン変更{% else %}プランを選択{% endif %}
+            </a>
+            {% if user.plan in ("all_tools", "pro", "per_tool") %}
+            <a href="/account/cancel" class="px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition">
+                解約する
+            </a>
+            {% endif %}
+            {% if user.stripe_customer_id %}
+            <a href="/billing/portal" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                請求書・カード管理
+            </a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Account Info -->

@@ -23,6 +23,22 @@ async def lifespan(app: FastAPI):
         count = await seed_gems_items(db)
         if count:
             print(f"[startup] Seeded {count} GEMS/GPT items.")
+
+    # Seed tool definitions
+    from app.users.models import ToolDefinition
+    from sqlalchemy import select
+    async with _session() as db:
+        existing = await db.execute(select(ToolDefinition))
+        if not existing.scalars().first():
+            tools = [
+                ToolDefinition(slug="sales", name="営業自動化", description="企業リスト・HP巡回・CRM・メール営業", monthly_price=100, display_order=1, icon_emoji="📼", stripe_product_id="prod_UDDIwP4jsIEPyk", stripe_price_id="price_1TEmrmKAVaivWwqwOO0NPLql"),
+                ToolDefinition(slug="mailer", name="メール送信", description="テンプレメール一括送信・履歴管理", monthly_price=100, display_order=2, icon_emoji="✉", stripe_product_id="prod_UDDISonnzcKLmO", stripe_price_id="price_1TEms7KAVaivWwqwabRK9pJb"),
+                ToolDefinition(slug="gems", name="GEMS/GPTライブラリ", description="AI業務改善プロンプト200本", monthly_price=100, display_order=3, icon_emoji="✨", stripe_product_id="prod_UDDKTlnnnfoPeR", stripe_price_id="price_1TEmtNKAVaivWwqwmeG7NnWK"),
+            ]
+            db.add_all(tools)
+            await db.commit()
+            print("[startup] Seeded 3 tool definitions.")
+
     yield
 
 
@@ -72,10 +88,10 @@ async def landing(request: Request, user=Depends(get_current_user)):
     """Landing page (top) or redirect to dashboard if logged in."""
     if user:
         return templates.TemplateResponse(
-            "dashboard.html", {"request": request, "user": user, "page": "dashboard"}
+            request, "dashboard.html", {"user": user, "page": "dashboard"}
         )
     return templates.TemplateResponse(
-        "landing.html", {"request": request, "user": None}
+        request, "landing.html", {"user": None}
     )
 
 
@@ -85,6 +101,27 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
     if not user:
         from fastapi.responses import RedirectResponse
         return RedirectResponse(url="/auth/login", status_code=303)
+
+    # 個別ツール購読中のslug一覧を取得
+    subscribed_tools: set[str] = set()
+    if user.plan == "per_tool":
+        from sqlalchemy import select
+        from app.database import get_db as _get_db
+        from app.database import async_session
+        from app.users.models import UserToolSubscription
+        async with async_session() as db:
+            result = await db.execute(
+                select(UserToolSubscription.tool_slug).where(
+                    UserToolSubscription.user_id == user.id,
+                    UserToolSubscription.is_active == True,
+                )
+            )
+            subscribed_tools = {row[0] for row in result.all()}
+
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "user": user, "page": "dashboard"}
+        request, "dashboard.html", {
+            "user": user,
+            "page": "dashboard",
+            "subscribed_tools": subscribed_tools,
+        }
     )

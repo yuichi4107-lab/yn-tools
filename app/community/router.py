@@ -78,8 +78,8 @@ async def reviews_list(
         )).scalars().all()
         my_reviews = {r.tool_slug: r for r in my}
 
-    return templates.TemplateResponse("community/reviews.html", {
-        "request": request, "user": user, "page": "community",
+    return templates.TemplateResponse(request, "community/reviews.html", {
+        "user": user, "page": "community",
         "reviews": reviews, "user_map": user_map,
         "tools": TOOLS, "tool_stats": tool_stats,
         "current_tool": tool, "my_reviews": my_reviews,
@@ -141,8 +141,8 @@ async def feedback_list(
         )).scalar() or 0
         status_counts[s] = cnt
 
-    return templates.TemplateResponse("community/feedback.html", {
-        "request": request, "user": user, "page": "community",
+    return templates.TemplateResponse(request, "community/feedback.html", {
+        "user": user, "page": "community",
         "feedbacks": feedbacks, "user_map": user_map,
         "tools": TOOLS, "categories": FEEDBACK_CATEGORIES,
         "status_counts": status_counts,
@@ -186,8 +186,8 @@ async def feedback_detail(
     tool_name = next((t["name"] for t in TOOLS if t["slug"] == fb.tool_slug), "全般")
     cat_label = next((c["label"] for c in FEEDBACK_CATEGORIES if c["value"] == fb.category), fb.category)
 
-    return templates.TemplateResponse("community/feedback_detail.html", {
-        "request": request, "user": user, "page": "community",
+    return templates.TemplateResponse(request, "community/feedback_detail.html", {
+        "user": user, "page": "community",
         "fb": fb, "author": author,
         "tool_name": tool_name, "cat_label": cat_label,
     })
@@ -258,8 +258,8 @@ async def requests_list(
         )).scalar() or 0
         status_counts[s] = cnt
 
-    return templates.TemplateResponse("community/requests.html", {
-        "request": request, "user": user, "page": "community",
+    return templates.TemplateResponse(request, "community/requests.html", {
+        "user": user, "page": "community",
         "app_requests": app_requests, "user_map": user_map,
         "my_votes": my_votes, "request_statuses": REQUEST_STATUSES,
         "status_counts": status_counts,

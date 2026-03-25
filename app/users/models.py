@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -14,7 +14,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(255))
     avatar_url: Mapped[str | None] = mapped_column(String(500))
-    plan: Mapped[str] = mapped_column(String(20), default="free")  # free / pro
+    plan: Mapped[str] = mapped_column(String(20), default="free")  # free / per_tool / all_tools / pro(legacy)
     trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime)
     stripe_customer_id: Mapped[str | None] = mapped_column(String(255))
     stripe_subscription_id: Mapped[str | None] = mapped_column(String(255))
@@ -27,7 +27,16 @@ class User(Base):
 
     @property
     def has_active_plan(self) -> bool:
-        if self.plan == "pro":
+        if self.plan in ("pro", "all_tools", "per_tool"):
+            return True
+        if self.trial_ends_at and self.trial_ends_at > datetime.utcnow():
+            return True
+        return False
+
+    @property
+    def has_full_access(self) -> bool:
+        """全ツールにアクセス可能か（全ツールプラン/旧Pro/トライアル中）"""
+        if self.plan in ("pro", "all_tools"):
             return True
         if self.trial_ends_at and self.trial_ends_at > datetime.utcnow():
             return True
@@ -55,5 +64,44 @@ class PaymentHistory(Base):
     amount: Mapped[int] = mapped_column(Integer)  # JPY
     currency: Mapped[str] = mapped_column(String(10), default="jpy")
     status: Mapped[str] = mapped_column(String(50))  # succeeded / failed / refunded
+    tool_slug: Mapped[str | None] = mapped_column(String(50))  # null = 全ツールプラン
     paid_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class ToolDefinition(Base):
+    __tablename__ = "tool_definitions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str] = mapped_column(Text, server_default="")
+    monthly_price: Mapped[int] = mapped_column(Integer, server_default="100")  # JPY
+    stripe_product_id: Mapped[str | None] = mapped_column(String(255))
+    stripe_price_id: Mapped[str | None] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    display_order: Mapped[int] = mapped_column(Integer, server_default="0")
+    icon_emoji: Mapped[str] = mapped_column(String(10), server_default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    def __repr__(self) -> str:
+        return f"<ToolDefinition(slug={self.slug!r}, name={self.name!r})>"
+
+
+class UserToolSubscription(Base):
+    __tablename__ = "user_tool_subscriptions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), index=True)
+    tool_slug: Mapped[str] = mapped_column(String(50), index=True)
+    stripe_subscription_item_id: Mapped[str | None] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    subscribed_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    canceled_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "tool_slug", name="uq_user_tool"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<UserToolSubscription(user_id={self.user_id}, tool={self.tool_slug!r}, active={self.is_active})>"

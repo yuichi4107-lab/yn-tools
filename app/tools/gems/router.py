@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.dependencies import require_active_plan
+from app.auth.dependencies import require_tool_access
 from app.database import get_db
 from app.tools.gems.models import GemsFavorite, GemsItem
 from app.tools.gems.service import get_categories, get_user_favorite_ids, search_items
@@ -22,24 +22,21 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def index(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("gems")),
     db: AsyncSession = Depends(get_db),
     type: str | None = Query(None),
-    level: str | None = Query(None),
     category: str | None = Query(None),
     q: str | None = Query(None),
 ):
-    items = await search_items(db, item_type=type, level=level, category=category, q=q)
+    items = await search_items(db, item_type=type, category=category, q=q)
     categories = await get_categories(db)
     fav_ids = await get_user_favorite_ids(db, user.id)
-    return templates.TemplateResponse("tools/gems/index.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "tools/gems/index.html", {
         "user": user,
         "items": items,
         "categories": categories,
         "fav_ids": fav_ids,
         "current_type": type or "",
-        "current_level": level or "",
         "current_category": category or "",
         "current_q": q or "",
         "page": "gems",
@@ -53,7 +50,7 @@ async def index(
 async def detail(
     request: Request,
     item_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("gems")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(GemsItem).where(GemsItem.id == item_id))
@@ -61,8 +58,7 @@ async def detail(
     if not item:
         return HTMLResponse("<h1>Not Found</h1>", status_code=404)
     fav_ids = await get_user_favorite_ids(db, user.id)
-    return templates.TemplateResponse("tools/gems/detail.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "tools/gems/detail.html", {
         "user": user,
         "item": item,
         "is_fav": item.id in fav_ids,
@@ -76,7 +72,7 @@ async def detail(
 @router.get("/{item_id}/download")
 async def download(
     item_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("gems")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(GemsItem).where(GemsItem.id == item_id))
@@ -107,7 +103,7 @@ async def download(
 @router.post("/{item_id}/favorite")
 async def toggle_favorite(
     item_id: int,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("gems")),
     db: AsyncSession = Depends(get_db),
 ):
     existing = await db.execute(
@@ -130,7 +126,7 @@ async def toggle_favorite(
 @router.get("/favorites/list", response_class=HTMLResponse)
 async def favorites_list(
     request: Request,
-    user: User = Depends(require_active_plan),
+    user: User = Depends(require_tool_access("gems")),
     db: AsyncSession = Depends(get_db),
 ):
     fav_ids_result = await db.execute(
@@ -144,8 +140,7 @@ async def favorites_list(
         )
         items = list(result.scalars().all())
     categories = await get_categories(db)
-    return templates.TemplateResponse("tools/gems/index.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "tools/gems/index.html", {
         "user": user,
         "items": items,
         "categories": categories,

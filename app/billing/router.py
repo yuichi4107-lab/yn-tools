@@ -1,45 +1,61 @@
 """Billing routes: upgrade, webhook, portal."""
 
 import stripe
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import require_login
 from app.billing.stripe_service import (
+    create_all_tools_checkout,
     create_billing_portal_session,
-    create_checkout_session,
+    create_tool_checkout,
     handle_checkout_completed,
     handle_invoice_paid,
     handle_subscription_deleted,
 )
 from app.config import settings
 from app.database import get_db
-from app.users.models import User
+from app.users.models import ToolDefinition, User
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 templates = Jinja2Templates(directory="app/templates")
 
 
 @router.get("/upgrade", response_class=HTMLResponse)
-async def upgrade_page(request: Request, user: User = Depends(require_login)):
-    """Show upgrade/pricing page."""
+async def upgrade_page(
+    request: Request,
+    user: User = Depends(require_login),
+    db: AsyncSession = Depends(get_db),
+):
+    """Show upgrade/pricing page with new plan options."""
+    result = await db.execute(
+        select(ToolDefinition)
+        .where(ToolDefinition.is_active == True)
+        .order_by(ToolDefinition.display_order)
+    )
+    tools = result.scalars().all()
     return templates.TemplateResponse(
+        request,
         "billing/upgrade.html",
         {
-            "request": request,
             "user": user,
+            "tools": tools,
             "stripe_publishable_key": settings.stripe_publishable_key,
         },
     )
 
 
 @router.post("/checkout")
-async def create_checkout(request: Request, user: User = Depends(require_login)):
-    """Create Stripe Checkout session and redirect."""
+async def create_checkout(
+    request: Request,
+    user: User = Depends(require_login),
+):
+    """Create Stripe Checkout session for all-tools plan and redirect."""
     base_url = str(request.base_url).rstrip("/")
-    checkout_url = await create_checkout_session(
+    checkout_url = await create_all_tools_checkout(
         user=user,
         success_url=f"{base_url}/billing/success",
         cancel_url=f"{base_url}/billing/upgrade",
@@ -47,11 +63,38 @@ async def create_checkout(request: Request, user: User = Depends(require_login))
     return RedirectResponse(url=checkout_url, status_code=303)
 
 
+@router.post("/checkout/tools")
+async def create_tool_checkout_route(
+    request: Request,
+    user: User = Depends(require_login),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create Stripe Checkout session for selected individual tools."""
+    form = await request.form()
+    tool_slugs = form.getlist("tool_slugs")
+    if not tool_slugs:
+        raise HTTPException(status_code=400, detail="no_tools_selected")
+
+    base_url = str(request.base_url).rstrip("/")
+    try:
+        checkout_url = await create_tool_checkout(
+            user=user,
+            tool_slugs=tool_slugs,
+            db=db,
+            success_url=f"{base_url}/billing/success",
+            cancel_url=f"{base_url}/billing/upgrade",
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return RedirectResponse(url=checkout_url, status_code=303)
+
+
 @router.get("/success", response_class=HTMLResponse)
 async def checkout_success(request: Request, user: User = Depends(require_login)):
     """Post-checkout success page."""
     return templates.TemplateResponse(
-        "billing/success.html", {"request": request, "user": user}
+        request, "billing/success.html", {"user": user}
     )
 
 

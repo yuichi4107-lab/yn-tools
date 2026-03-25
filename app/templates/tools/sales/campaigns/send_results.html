@@ -3,11 +3,11 @@
 
 {% block content %}
 <div class="mb-6">
-    <a href="{{ P }}/campaigns/{{ campaign_id }}" class="text-sm text-gray-500 hover:text-gray-700">&larr; キャンペーン詳細</a>
+    <a href="{{ P }}/campaigns/{{ campaign_id }}" class="text-sm text-gray-500 hover:text-gray-700">&larr; メール送信詳細</a>
     <h1 class="text-2xl font-bold text-gray-900 mt-1">
         {% if result.dry_run %}プレビュー結果{% else %}送信結果{% endif %}
     </h1>
-    <p class="text-gray-500 mt-1">キャンペーン: {{ result.campaign }}</p>
+    <p class="text-gray-500 mt-1">メール送信: {{ result.campaign }}</p>
 </div>
 
 <!-- Summary -->
@@ -32,7 +32,7 @@
 
 {% if result.dry_run %}
 <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-sm text-amber-800">
-    これはプレビューです。実際のメール送信は行われていません。本送信はキャンペーン詳細画面から実行してください。
+    これはプレビューです。実際のメール送信は行われていません。本送信はメール送信詳細画面から実行してください。
 </div>
 {% endif %}
 
@@ -70,7 +70,7 @@
 {% endif %}
 
 <div class="mt-6 flex gap-3">
-    <a href="{{ P }}/campaigns/{{ campaign_id }}" class="px-4 py-2 text-sm border rounded-lg text-gray-600 hover:bg-gray-50">キャンペーン詳細</a>
+    <a href="{{ P }}/campaigns/{{ campaign_id }}" class="px-4 py-2 text-sm border rounded-lg text-gray-600 hover:bg-gray-50">メール送信詳細</a>
     <a href="{{ P }}/crm" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">CRM管理</a>
 </div>
 {% endblock %}
