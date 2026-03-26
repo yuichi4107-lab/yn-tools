@@ -25,7 +25,31 @@
     <div class="bg-white rounded-xl shadow-sm border p-6 mb-5">
         <h2 class="font-bold text-lg mb-4">プラン</h2>
 
-        {% if user.plan == "all_tools" %}
+        {% if user.is_in_trial %}
+        {# トライアル期間中（有料プラン契約済みでもFreeプランと表記） #}
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Freeプラン</span>
+                <span class="text-gray-600 text-sm">{{ user.trial_ends_at.strftime('%Y年%m月%d日') }} まで</span>
+            </div>
+        </div>
+        <p class="text-gray-500 text-sm mb-4">すべてのツールを無料でお試しいただけます。</p>
+
+        {% if user.has_paid_plan_during_trial and paid_start_date %}
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <p class="text-blue-800 text-sm font-medium">
+                {{ paid_start_date }} から
+                {% if user.plan == "all_tools" %}全ツールプラン（&yen;2,000/月）
+                {% elif user.plan == "per_tool" %}従量制プラン（&yen;{{ subscribed_tools | length * 100 }}/月）
+                {% elif user.plan == "pro" %}Proプラン（&yen;500/月）
+                {% endif %}
+                に自動切替
+            </p>
+            <p class="text-blue-600 text-xs mt-1">初回有料期間: {{ paid_start_date }} から1か月間</p>
+        </div>
+        {% endif %}
+
+        {% elif user.plan == "all_tools" %}
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-3">
                 <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">全ツールプラン</span>
@@ -33,6 +57,12 @@
             </div>
         </div>
         <p class="text-gray-500 text-sm mb-4">すべてのツールが使い放題です。</p>
+        {% if subscription_info %}
+        <div class="text-xs text-gray-500 mb-4 space-y-1">
+            <p>有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}</p>
+            <p>自動更新: {{ '有効' if not subscription_info.cancel_at_period_end else '解約予定（期間終了後に停止）' }}</p>
+        </div>
+        {% endif %}
 
         {% elif user.plan == "pro" %}
         <div class="flex items-center justify-between mb-3">
@@ -42,6 +72,12 @@
             </div>
         </div>
         <p class="text-gray-500 text-sm mb-4">すべてのツールが利用可能です（旧料金体系）。</p>
+        {% if subscription_info %}
+        <div class="text-xs text-gray-500 mb-4 space-y-1">
+            <p>有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}</p>
+            <p>自動更新: {{ '有効' if not subscription_info.cancel_at_period_end else '解約予定（期間終了後に停止）' }}</p>
+        </div>
+        {% endif %}
 
         {% elif user.plan == "per_tool" %}
         <div class="flex items-center justify-between mb-3">
@@ -60,21 +96,24 @@
             </div>
         </div>
         {% endif %}
-
-        {% elif user.trial_remaining_days is not none and user.trial_remaining_days > 0 %}
-        <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">無料トライアル</span>
-                <span class="text-gray-600 text-sm">残り {{ user.trial_remaining_days }} 日</span>
-            </div>
+        {% if subscription_info %}
+        <div class="text-xs text-gray-500 mb-4 space-y-1">
+            <p>有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}</p>
+            <p>自動更新: {{ '有効' if not subscription_info.cancel_at_period_end else '解約予定（期間終了後に停止）' }}</p>
         </div>
-        <p class="text-gray-500 text-sm mb-4">すべてのツールを無料でお試しいただけます。</p>
+        {% endif %}
 
         {% else %}
         <div class="flex items-center justify-between mb-3">
             <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">Free（期限切れ）</span>
         </div>
         <p class="text-gray-500 text-sm mb-4">プランを選択してツールの利用を再開できます。</p>
+        {% endif %}
+
+        {% if pending_downgrade %}
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+            <p class="text-amber-700 text-sm">次回更新時にプラン変更予定: &yen;{{ "{:,}".format(pending_downgrade.new_cost) }}/月</p>
+        </div>
         {% endif %}
 
         <!-- Action Buttons -->

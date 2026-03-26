@@ -102,9 +102,8 @@ async def health_check():
 async def landing(request: Request, user=Depends(get_current_user)):
     """Landing page (top) or redirect to dashboard if logged in."""
     if user:
-        return templates.TemplateResponse(
-            request, "dashboard.html", {"user": user, "page": "dashboard"}
-        )
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/dashboard", status_code=303)
     return templates.TemplateResponse(
         request, "landing.html", {"user": None}
     )
@@ -118,9 +117,11 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
         return RedirectResponse(url="/auth/login", status_code=303)
 
     # 個別ツール購読中のslug一覧を取得
+    # is_active=True OR 削除予約中（canceled_at が未来）のツールも含む
     subscribed_tools: set[str] = set()
     if user.plan == "per_tool":
-        from sqlalchemy import select
+        from datetime import datetime as _dt
+        from sqlalchemy import or_, and_, select
         from app.database import get_db as _get_db
         from app.database import async_session
         from app.users.models import UserToolSubscription
@@ -128,15 +129,38 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
             result = await db.execute(
                 select(UserToolSubscription.tool_slug).where(
                     UserToolSubscription.user_id == user.id,
-                    UserToolSubscription.is_active == True,
+                    or_(
+                        UserToolSubscription.is_active == True,
+                        and_(
+                            UserToolSubscription.canceled_at != None,
+                            UserToolSubscription.canceled_at > _dt.utcnow(),
+                        ),
+                    ),
                 )
             )
             subscribed_tools = {row[0] for row in result.all()}
+
+    # Stripeサブスクリプション情報（有効期間・自動更新）
+    subscription_info = None
+    if user.stripe_subscription_id:
+        from app.users.router import _get_subscription_info
+        subscription_info = _get_subscription_info(user.stripe_subscription_id)
+
+    # Free期間中の有料開始日（trial_ends_atの翌日）
+    paid_start_date = None
+    if user.is_in_trial and user.trial_ends_at:
+        from datetime import timedelta as _td
+        paid_start = (user.trial_ends_at + _td(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0,
+        )
+        paid_start_date = paid_start.strftime("%Y年%m月%d日")
 
     return templates.TemplateResponse(
         request, "dashboard.html", {
             "user": user,
             "page": "dashboard",
             "subscribed_tools": subscribed_tools,
+            "subscription_info": subscription_info,
+            "paid_start_date": paid_start_date,
         }
     )

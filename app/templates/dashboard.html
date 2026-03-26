@@ -4,14 +4,33 @@
 {% block content %}
 <div class="mb-8 animate-fade-in">
     <h1 class="text-2xl font-bold text-gray-900">こんにちは、{{ user.name }}さん</h1>
-    {% if user.plan == "all_tools" %}
+    {% if user.is_in_trial %}
+    <p class="text-indigo-600 mt-1 text-sm">Freeプラン（{{ user.trial_ends_at.strftime('%Y年%m月%d日') }} まで / すべてのツールが利用可能）</p>
+    {% if user.has_paid_plan_during_trial and paid_start_date %}
+    <p class="text-gray-500 mt-1 text-xs">
+        {{ paid_start_date }} から
+        {% if user.plan == "all_tools" %}全ツールプラン（&yen;2,000/月）
+        {% elif user.plan == "per_tool" %}従量制プラン（&yen;{{ subscribed_tools | length * 100 }}/月）
+        {% elif user.plan == "pro" %}Proプラン（&yen;500/月）
+        {% endif %}
+        に自動切替
+    </p>
+    {% endif %}
+    {% elif user.plan == "all_tools" %}
     <p class="text-green-600 mt-1 text-sm font-medium">全ツールプラン</p>
+    {% if subscription_info %}
+    <p class="text-gray-500 mt-1 text-xs">有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}（自動更新{{ '有効' if not subscription_info.cancel_at_period_end else '：解約予定' }}）</p>
+    {% endif %}
     {% elif user.plan == "pro" %}
     <p class="text-green-600 mt-1 text-sm font-medium">Pro プラン</p>
+    {% if subscription_info %}
+    <p class="text-gray-500 mt-1 text-xs">有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}（自動更新{{ '有効' if not subscription_info.cancel_at_period_end else '：解約予定' }}）</p>
+    {% endif %}
     {% elif user.plan == "per_tool" %}
     <p class="text-indigo-600 mt-1 text-sm font-medium">従量制プラン（{{ subscribed_tools | length }}個のツール利用中）</p>
-    {% elif user.trial_remaining_days is not none and user.trial_remaining_days > 0 %}
-    <p class="text-indigo-600 mt-1 text-sm">無料トライアル中（残り {{ user.trial_remaining_days }} 日）</p>
+    {% if subscription_info %}
+    <p class="text-gray-500 mt-1 text-xs">有効期間: {{ subscription_info.current_period_start }} 〜 {{ subscription_info.current_period_end }}（自動更新{{ '有効' if not subscription_info.cancel_at_period_end else '：解約予定' }}）</p>
+    {% endif %}
     {% else %}
     <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-3">
         <p class="text-amber-800 text-sm">

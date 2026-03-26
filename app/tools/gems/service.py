@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.tools.gems.models import GemsFavorite, GemsItem
 
-CONTENT_DIR = Path(__file__).resolve().parents[4] / ".company" / "outputs" / "ai-business-content-100"
+CONTENT_DIR = Path(__file__).resolve().parent / "data"
 
 # Folder name → (item_type, level)
 FOLDER_MAP = {

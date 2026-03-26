@@ -9,13 +9,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import require_login
 from app.billing.stripe_service import (
+    change_plan,
     create_all_tools_checkout,
     create_billing_portal_session,
     create_tool_checkout,
+    get_monthly_cost,
     handle_checkout_completed,
     handle_invoice_paid,
     handle_subscription_deleted,
 )
+from app.users.models import UserToolSubscription
 from app.config import settings
 from app.database import get_db
 from app.users.models import ToolDefinition, User
@@ -88,6 +91,33 @@ async def create_tool_checkout_route(
         raise HTTPException(status_code=400, detail=str(e))
 
     return RedirectResponse(url=checkout_url, status_code=303)
+
+
+@router.post("/change-plan")
+async def change_plan_route(
+    request: Request,
+    user: User = Depends(require_login),
+    db: AsyncSession = Depends(get_db),
+):
+    """プラン変更（既存サブスクリプションの変更）"""
+    form = await request.form()
+    plan_type = form.get("plan_type", "per_tool")
+    tool_slugs = form.getlist("tool_slugs")
+
+    # サブスクリプション未登録 → 新規チェックアウトへリダイレクト
+    if not user.stripe_subscription_id:
+        if plan_type == "all_tools":
+            return RedirectResponse(url="/billing/checkout", status_code=307)
+        return RedirectResponse(url="/billing/checkout/tools", status_code=307)
+
+    try:
+        result = await change_plan(user, plan_type, tool_slugs, db)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return templates.TemplateResponse(
+        request, "billing/plan_changed.html", {"user": user, "result": result}
+    )
 
 
 @router.get("/success", response_class=HTMLResponse)

@@ -1,5 +1,6 @@
 """Auth routes: Google OAuth login/logout."""
 
+import calendar
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, Request
@@ -59,13 +60,29 @@ async def google_callback(
         user.avatar_url = avatar_url
     else:
         # New user - create with trial period
+        # Freeプラン: 登録日から翌月同日の前日まで
+        # 例: 3/25登録 → 4/24 23:59:59 まで（4/25から有料開始）
+        now = datetime.utcnow()
+        next_month = now.month + 1
+        next_year = now.year
+        if next_month > 12:
+            next_month = 1
+            next_year += 1
+        # 翌月の同日が存在しない場合は翌月末日を使用（例: 1/31 → 2/28）
+        max_day = calendar.monthrange(next_year, next_month)[1]
+        same_day_next_month = min(now.day, max_day)
+        trial_end = now.replace(
+            year=next_year, month=next_month, day=same_day_next_month,
+            hour=0, minute=0, second=0, microsecond=0,
+        ) - timedelta(seconds=1)  # 翌月同日の前日 23:59:59
+
         user = User(
             google_id=google_id,
             email=email,
             name=name,
             avatar_url=avatar_url,
             plan="free",
-            trial_ends_at=datetime.utcnow() + timedelta(days=settings.trial_days),
+            trial_ends_at=trial_end,
         )
         db.add(user)
 

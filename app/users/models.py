@@ -43,6 +43,18 @@ class User(Base):
         return False
 
     @property
+    def is_in_trial(self) -> bool:
+        """トライアル期間中かどうか"""
+        if self.trial_ends_at and self.trial_ends_at > datetime.utcnow():
+            return True
+        return False
+
+    @property
+    def has_paid_plan_during_trial(self) -> bool:
+        """トライアル中に有料プランを契約済みか"""
+        return self.is_in_trial and self.plan in ("per_tool", "all_tools", "pro")
+
+    @property
     def trial_remaining_days(self) -> int | None:
         if self.plan == "pro":
             return None
