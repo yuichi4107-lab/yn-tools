@@ -14,6 +14,7 @@ from app.users.models import User
 
 from .models import ImageGenHistory
 from . import service
+from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/imagegen", tags=["imagegen"])
 templates = Jinja2Templates(directory="app/templates")
@@ -45,6 +46,7 @@ async def imagegen_index(
         .limit(10)
     )
     history = recent.scalars().all()
+    monthly_used = await get_monthly_usage(db, user.id, "imagegen")
 
     return templates.TemplateResponse(
         request, "tools/imagegen/index.html", {
@@ -54,6 +56,8 @@ async def imagegen_index(
             "total_images": total_images,
             "history": history,
             "style_presets": service.get_style_presets(),
+            "monthly_used": monthly_used,
+            "monthly_limit": get_limit("imagegen"),
         }
     )
 
@@ -72,6 +76,12 @@ async def api_generate(
     """画像生成"""
     if not prompt.strip():
         return {"error": "プロンプトを入力してください。"}
+
+    # 月次制限チェック
+    used = await get_monthly_usage(db, user.id, "imagegen")
+    err = limit_error("imagegen", used, get_limit("imagegen"), amount=min(count, 4))
+    if err:
+        return {"error": err}
 
     # サイズバリデーション
     valid_sizes = ["1024x1024", "1536x1024", "1024x1536"]

@@ -12,6 +12,7 @@ from app.users.models import User
 
 from .models import ContentGenHistory, ContentTemplate
 from . import service
+from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/contentgen", tags=["contentgen"])
 templates = Jinja2Templates(directory="app/templates")
@@ -52,6 +53,8 @@ async def contentgen_index(
     )
     custom_templates = user_templates.scalars().all()
 
+    monthly_used = await get_monthly_usage(db, user.id, "contentgen")
+
     return templates.TemplateResponse(
         request, "tools/contentgen/index.html", {
             "user": user,
@@ -61,6 +64,8 @@ async def contentgen_index(
             "history": history,
             "builtin_templates": service.BUILTIN_TEMPLATES,
             "custom_templates": custom_templates,
+            "monthly_used": monthly_used,
+            "monthly_limit": get_limit("contentgen"),
         }
     )
 
@@ -82,6 +87,10 @@ async def api_generate(
     """コンテンツ生成"""
     if not topic.strip():
         return {"error": "テーマ/トピックを入力してください。"}
+
+    used = await get_monthly_usage(db, user.id, "contentgen")
+    if err := limit_error("contentgen", used, get_limit("contentgen")):
+        return {"error": err}
 
     try:
         result = await service.generate_content(

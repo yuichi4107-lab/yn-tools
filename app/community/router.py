@@ -15,9 +15,18 @@ router = APIRouter(prefix="/community", tags=["community"])
 templates = Jinja2Templates(directory="app/templates")
 
 TOOLS = [
-    {"slug": "sales", "name": "営業自動化"},
-    {"slug": "mailer", "name": "メール送信"},
-    {"slug": "gems", "name": "GEMS/GPTライブラリ"},
+    {"slug": "sales",       "name": "営業自動化"},
+    {"slug": "mailer",      "name": "メール送信"},
+    {"slug": "gems",        "name": "GEMS/GPTライブラリ"},
+    {"slug": "docai",       "name": "文書処理"},
+    {"slug": "contentgen",  "name": "コンテンツ作成"},
+    {"slug": "webresearch", "name": "Webリサーチャー"},
+    {"slug": "imagegen",    "name": "画像生成"},
+    {"slug": "chatbot",     "name": "チャットボット"},
+    {"slug": "qrcode",      "name": "QRコード"},
+    {"slug": "fileconv",    "name": "ファイル変換"},
+    {"slug": "taskmanager", "name": "タスク管理"},
+    {"slug": "formbuilder", "name": "フォームビルダー"},
 ]
 
 FEEDBACK_CATEGORIES = [

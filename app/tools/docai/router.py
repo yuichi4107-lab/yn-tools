@@ -12,6 +12,7 @@ from app.users.models import User
 
 from .models import DocaiHistory
 from . import service
+from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/docai", tags=["docai"])
 templates = Jinja2Templates(directory="app/templates")
@@ -46,6 +47,8 @@ async def docai_index(
     )
     history = recent.scalars().all()
 
+    monthly_used = await get_monthly_usage(db, user.id, "docai")
+
     return templates.TemplateResponse(
         request, "tools/docai/index.html", {
             "user": user,
@@ -53,6 +56,8 @@ async def docai_index(
             "total_uses": total_uses,
             "total_chars": total_chars,
             "history": history,
+            "monthly_used": monthly_used,
+            "monthly_limit": get_limit("docai"),
         }
     )
 
@@ -71,6 +76,10 @@ async def api_summarize(
 ):
     """文書要約API"""
     input_text = await _resolve_input(file, text)
+
+    used = await get_monthly_usage(db, user.id, "docai")
+    if err := limit_error("docai", used, get_limit("docai")):
+        return {"error": err}
 
     try:
         result = await service.summarize(input_text, lang=lang, detail=detail)
@@ -92,6 +101,10 @@ async def api_translate(
 ):
     """翻訳API"""
     input_text = await _resolve_input(file, text)
+
+    used = await get_monthly_usage(db, user.id, "docai")
+    if err := limit_error("docai", used, get_limit("docai")):
+        return {"error": err}
 
     try:
         result = await service.translate(input_text, target_lang=target_lang)
@@ -117,6 +130,10 @@ async def api_qa(
     if not question.strip():
         return {"error": "質問を入力してください。"}
 
+    used = await get_monthly_usage(db, user.id, "docai")
+    if err := limit_error("docai", used, get_limit("docai")):
+        return {"error": err}
+
     try:
         result = await service.qa(input_text, question)
     except ValueError as e:
@@ -137,6 +154,10 @@ async def api_extract(
 ):
     """情報抽出API"""
     input_text = await _resolve_input(file, text)
+
+    used = await get_monthly_usage(db, user.id, "docai")
+    if err := limit_error("docai", used, get_limit("docai")):
+        return {"error": err}
 
     try:
         result = await service.extract_info(input_text, extract_type=extract_type)
@@ -184,6 +205,8 @@ async def _resolve_input(file: UploadFile | None, text: str) -> str:
         content = await file.read()
         if not content:
             raise ValueError("ファイルが空です。")
+        if len(content) > 10 * 1024 * 1024:
+            raise ValueError("ファイルサイズが上限（10MB）を超えています。")
         return await service.extract_text_from_file(content, file.filename)
     if text.strip():
         return text.strip()

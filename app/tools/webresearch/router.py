@@ -12,6 +12,7 @@ from app.users.models import User
 
 from .models import WebResearchHistory
 from . import service
+from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/webresearch", tags=["webresearch"])
 templates = Jinja2Templates(directory="app/templates")
@@ -39,6 +40,7 @@ async def webresearch_index(
         .limit(10)
     )
     history = recent.scalars().all()
+    monthly_used = await get_monthly_usage(db, user.id, "webresearch")
 
     return templates.TemplateResponse(
         request, "tools/webresearch/index.html", {
@@ -46,6 +48,8 @@ async def webresearch_index(
             "page": "webresearch",
             "total_uses": total_uses,
             "history": history,
+            "monthly_used": monthly_used,
+            "monthly_limit": get_limit("webresearch"),
         }
     )
 
@@ -62,6 +66,10 @@ async def api_analyze(
     """単一ページをAI分析"""
     if not url.strip():
         return {"error": "URLを入力してください。"}
+
+    used = await get_monthly_usage(db, user.id, "webresearch")
+    if err := limit_error("webresearch", used, get_limit("webresearch")):
+        return {"error": err}
 
     try:
         page = await service.fetch_page(url.strip())
@@ -113,6 +121,10 @@ async def api_compare(
         return {"error": "比較するには2つ以上のURLを入力してください（1行に1URL）。"}
     if len(url_list) > 5:
         return {"error": "一度に比較できるのは最大5サイトです。"}
+
+    used = await get_monthly_usage(db, user.id, "webresearch")
+    if err := limit_error("webresearch", used, get_limit("webresearch")):
+        return {"error": err}
 
     pages = await service.fetch_multiple_pages(url_list)
 

@@ -14,6 +14,7 @@ from app.users.models import User
 
 from .models import Chatbot, ChatMessage
 from . import service
+from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/chatbot", tags=["chatbot"])
 templates = Jinja2Templates(directory="app/templates")
@@ -34,12 +35,15 @@ async def chatbot_index(
         .order_by(Chatbot.created_at.desc())
     )
     bots = result.scalars().all()
+    monthly_used = await get_monthly_usage(db, user.id, "chatbot")
 
     return templates.TemplateResponse(
         request, "tools/chatbot/index.html", {
             "user": user,
             "page": "chatbot",
             "bots": bots,
+            "monthly_used": monthly_used,
+            "monthly_limit": get_limit("chatbot"),
         }
     )
 
@@ -107,12 +111,16 @@ async def chatbot_detail(
         from fastapi.responses import RedirectResponse
         return RedirectResponse(url="/tools/chatbot/", status_code=303)
 
-    # 統計
+    # 統計（bot所有者のボットのみ集計）
     msg_count = await db.execute(
-        select(func.count(ChatMessage.id)).where(ChatMessage.bot_id == bot_id)
+        select(func.count(ChatMessage.id))
+        .join(Chatbot, ChatMessage.bot_id == Chatbot.bot_id)
+        .where(ChatMessage.bot_id == bot_id, Chatbot.user_id == user.id)
     )
     session_count = await db.execute(
-        select(func.count(func.distinct(ChatMessage.session_id))).where(ChatMessage.bot_id == bot_id)
+        select(func.count(func.distinct(ChatMessage.session_id)))
+        .join(Chatbot, ChatMessage.bot_id == Chatbot.bot_id)
+        .where(ChatMessage.bot_id == bot_id, Chatbot.user_id == user.id)
     )
 
     base_url = str(request.base_url).rstrip("/")
@@ -211,6 +219,10 @@ async def api_chat(
     session_id: str = Form(default=""),
 ):
     """公開チャットAPI（ウィジェットから呼び出される）"""
+    from app.tools.rate_limit import check_rate_limit, get_client_ip
+    if err := check_rate_limit(get_client_ip(request), max_requests=10, window_sec=60):
+        return {"error": err}
+
     result = await db.execute(
         select(Chatbot).where(Chatbot.bot_id == bot_id, Chatbot.is_active == True)
     )
@@ -220,6 +232,11 @@ async def api_chat(
 
     if not message.strip():
         return {"error": "メッセージを入力してください。"}
+
+    # ボットオーナーの月次メッセージ上限チェック
+    used = await get_monthly_usage(db, bot.user_id, "chatbot")
+    if err := limit_error("chatbot", used, get_limit("chatbot")):
+        return {"error": err}
 
     if not session_id:
         session_id = uuid.uuid4().hex[:16]
@@ -247,8 +264,9 @@ async def widget_loader(
 
     base_url = str(request.base_url).rstrip("/")
     color = bot.theme_color or "#4F46E5"
-    welcome = bot.welcome_message.replace("'", "\\'").replace("\n", "\\n")
-    bot_name = bot.name.replace("'", "\\'")
+    import json as _json
+    welcome = _json.dumps(bot.welcome_message or "", ensure_ascii=False)
+    bot_name = _json.dumps(bot.name or "", ensure_ascii=False)
 
     js = f"""(function(){{
   if(document.getElementById('yn-chatbot-widget'))return;
@@ -286,7 +304,7 @@ async def widget_loader(
   btn.onclick=function(){{
     isOpen=!isOpen;
     panel.classList.toggle('open',isOpen);
-    if(isOpen&&msgs.children.length===0)addMsg('bot','{welcome}');
+    if(isOpen&&msgs.children.length===0)addMsg('bot',{welcome});
   }};
   document.body.appendChild(btn);
 
@@ -294,11 +312,12 @@ async def widget_loader(
   var panel=document.createElement('div');
   panel.id='yn-chatbot-panel';
   panel.innerHTML=`
-    <div class="yn-header"><span>{bot_name}</span><button class="yn-close" onclick="document.getElementById('yn-chatbot-panel').classList.remove('open')">&times;</button></div>
+    <div class="yn-header"><span id="yn-bot-name"></span><button class="yn-close" onclick="document.getElementById('yn-chatbot-panel').classList.remove('open')">&times;</button></div>
     <div class="yn-messages" id="yn-msgs"></div>
     <div class="yn-input-area"><input id="yn-input" placeholder="メッセージを入力..." onkeypress="if(event.key==='Enter')document.getElementById('yn-send').click()"><button id="yn-send">送信</button></div>
   `;
   document.body.appendChild(panel);
+  document.getElementById('yn-bot-name').textContent={bot_name};
 
   var msgs=document.getElementById('yn-msgs');
   var input=document.getElementById('yn-input');

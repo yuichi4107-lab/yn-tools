@@ -34,15 +34,36 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="sales", name="営業自動化", description="企業リスト・HP巡回・CRM・メール営業", monthly_price=100, display_order=1, icon_emoji="📼", stripe_product_id="prod_UDDIwP4jsIEPyk", stripe_price_id="price_1TEmrmKAVaivWwqwOO0NPLql"),
                 ToolDefinition(slug="mailer", name="メール送信", description="テンプレメール一括送信・履歴管理", monthly_price=100, display_order=2, icon_emoji="✉", stripe_product_id="prod_UDDISonnzcKLmO", stripe_price_id="price_1TEms7KAVaivWwqwabRK9pJb"),
                 ToolDefinition(slug="gems", name="GEMS/GPTライブラリ", description="AI業務改善プロンプト200本", monthly_price=100, display_order=3, icon_emoji="✨", stripe_product_id="prod_UDDKTlnnnfoPeR", stripe_price_id="price_1TEmtNKAVaivWwqwmeG7NnWK"),
-                ToolDefinition(slug="docai", name="AI文書処理", description="PDF・テキストをAIで要約・翻訳・Q&A・情報抽出", monthly_price=100, display_order=4, icon_emoji="📄"),
-                ToolDefinition(slug="contentgen", name="AIコンテンツ生成", description="SNS投稿・ブログ記事・広告コピー・メールをAI自動作成", monthly_price=100, display_order=5, icon_emoji="✍"),
-                ToolDefinition(slug="webresearch", name="AI Webリサーチャー", description="URLを入力→AIがページ分析・要約・競合比較", monthly_price=100, display_order=6, icon_emoji="🔍"),
-                ToolDefinition(slug="imagegen", name="AI画像生成", description="プロンプトからSNS画像・バナー・商品画像を一括生成", monthly_price=100, display_order=7, icon_emoji="🎨"),
-                ToolDefinition(slug="chatbot", name="AIチャットボットビルダー", description="自社サイトに埋め込めるAIチャットボットを作成・管理", monthly_price=100, display_order=8, icon_emoji="🤖"),
+                ToolDefinition(slug="docai", name="AI文書処理", description="PDF・テキストをAIで要約・翻訳・Q&A・情報抽出", monthly_price=100, display_order=4, icon_emoji="📄", stripe_product_id="prod_UFpGHnbxTIY5Vb", stripe_price_id="price_1THJcFKAVaivWwqwBmYWEkGk"),
+                ToolDefinition(slug="contentgen", name="AIコンテンツ生成", description="SNS投稿・ブログ記事・広告コピー・メールをAI自動作成", monthly_price=100, display_order=5, icon_emoji="✍", stripe_product_id="prod_UFpGzK1GN0kShA", stripe_price_id="price_1THJcFKAVaivWwqwzXpOSHHi"),
+                ToolDefinition(slug="webresearch", name="AI Webリサーチャー", description="URLを入力→AIがページ分析・要約・競合比較", monthly_price=100, display_order=6, icon_emoji="🔍", stripe_product_id="prod_UFpGoIwul505DJ", stripe_price_id="price_1THJcGKAVaivWwqwtcr2sni6"),
+                ToolDefinition(slug="imagegen", name="AI画像生成", description="プロンプトからSNS画像・バナー・商品画像を一括生成", monthly_price=100, display_order=7, icon_emoji="🎨", stripe_product_id="prod_UFpGtItyTPHits", stripe_price_id="price_1THJcHKAVaivWwqwUTmXRKj5"),
+                ToolDefinition(slug="chatbot", name="AIチャットボットビルダー", description="自社サイトに埋め込めるAIチャットボットを作成・管理", monthly_price=100, display_order=8, icon_emoji="🤖", stripe_product_id="prod_UFpGDaGFH7tNOo", stripe_price_id="price_1THJcHKAVaivWwqweWxPy8wM"),
+                ToolDefinition(slug="qrcode", name="QRコードジェネレーター", description="URL・テキストからQRコードを即座に生成", monthly_price=100, display_order=9, stripe_product_id="prod_UFpGHOqm0BrglG", stripe_price_id="price_1THJcIKAVaivWwqwr5ukmrfk"),
+                ToolDefinition(slug="fileconv", name="ファイル変換ツール", description="画像・テキスト・データのフォーマット変換", monthly_price=100, display_order=10, stripe_product_id="prod_UFpGqEJ8vdbp8t", stripe_price_id="price_1THJcIKAVaivWwqwDzjSJM8i"),
+                ToolDefinition(slug="taskmanager", name="タスクマネージャー", description="シンプルなタスク・締切管理", monthly_price=100, display_order=11, stripe_product_id="prod_UFpGCIM98v3gKz", stripe_price_id="price_1THJcJKAVaivWwqwwczBGb1n"),
+                ToolDefinition(slug="formbuilder", name="フォームビルダー", description="アンケート・申込フォームをノーコード作成", monthly_price=100, display_order=12, stripe_product_id="prod_UFpGsvPZND2Ymc", stripe_price_id="price_1THJcJKAVaivWwqwRpgxFua9"),
+                ToolDefinition(slug="invoice", name="請求書ジェネレーター", description="請求書を作成してPDFダウンロード", monthly_price=100, display_order=13, stripe_product_id="prod_UFpGC4r4n2Jndr", stripe_price_id="price_1THJcKKAVaivWwqwjp7WIwZb"),
+                ToolDefinition(slug="translate", name="翻訳", description="16言語対応・ビジネス/カジュアル/技術文書の自動翻訳", monthly_price=100, display_order=14, stripe_product_id="prod_UFpGwwmGW1P7A0", stripe_price_id="price_1THJcLKAVaivWwqwcBxODUQA"),
+                ToolDefinition(slug="writing", name="ライティングアシスタント", description="文章の校正・リライト・トーン変換を自動処理", monthly_price=100, display_order=15, stripe_product_id="prod_UFpGqgyAEAfyR2", stripe_price_id="price_1THJcLKAVaivWwqwZhTlZRRf"),
+                ToolDefinition(slug="contract", name="契約書チェッカー", description="契約書のリスク分析・要約・条項解説を自動実行", monthly_price=100, display_order=16, stripe_product_id="prod_UFpGShVe2fzl76", stripe_price_id="price_1THJcMKAVaivWwqw58ifggpA"),
+                ToolDefinition(slug="sns", name="SNS投稿スケジューラー", description="投稿の下書き・スケジュール管理・文案自動生成", monthly_price=100, display_order=17, stripe_product_id="prod_UFpGGMXzJgTUvU", stripe_price_id="price_1THJcMKAVaivWwqwDttQSNwm"),
+                ToolDefinition(slug="minutes", name="議事録", description="会議メモから構造化された議事録を自動生成", monthly_price=100, display_order=18, stripe_product_id="prod_UFpGVTxxjoiwzN", stripe_price_id="price_1THJcNKAVaivWwqwCE2AoGux"),
+                ToolDefinition(slug="lpbuilder", name="LPビルダー", description="原稿を入力するだけでLPを即公開", monthly_price=100, display_order=19, stripe_product_id="prod_UFpGGLFUnoAy0o", stripe_price_id="price_1THJcNKAVaivWwqwCQ9UxI3K"),
+                ToolDefinition(slug="booking", name="予約管理", description="予約フォームを作成して公開URLで予約受付", monthly_price=100, display_order=20, stripe_product_id="prod_UFpGoaaueRhFhM", stripe_price_id="price_1THJcOKAVaivWwqwwZTar1Iu"),
+                ToolDefinition(slug="expense", name="経費トラッカー", description="レシートAI読取・カテゴリ分類・月次レポート", monthly_price=100, display_order=21, stripe_product_id="prod_UFpGIJKnbxZy8g", stripe_price_id="price_1THJcPKAVaivWwqwBovu9Jum"),
+                ToolDefinition(slug="seocheck", name="SEO分析", description="URLのSEOスコア・問題検出・AI改善提案", monthly_price=100, display_order=22, stripe_product_id="prod_UFpGu4yCl9A8l9", stripe_price_id="price_1THJcPKAVaivWwqwE3U6GUy1"),
+                ToolDefinition(slug="salesboard", name="売上ダッシュボード", description="売上入力・グラフ可視化・月次推移・目標管理", monthly_price=100, display_order=23, stripe_product_id="prod_UFpGttLAa7oHML", stripe_price_id="price_1THJcQKAVaivWwqwHXHppCs6"),
+                ToolDefinition(slug="estimate", name="見積書作成", description="見積書を作成してPDFダウンロード", monthly_price=100, display_order=24, stripe_product_id="prod_UFpGm9vlzDCClC", stripe_price_id="price_1THJcQKAVaivWwqwU97UuRkZ"),
+                ToolDefinition(slug="passgen", name="パスワード生成", description="安全なパスワード生成・強度チェック", monthly_price=100, display_order=25, stripe_product_id="prod_UFpGMrmQoKuDjb", stripe_price_id="price_1THJcRKAVaivWwqwvSkLKyyk"),
+                ToolDefinition(slug="dailyreport", name="日報ジェネレーター", description="作業メモからAIで日報・週報を自動生成", monthly_price=100, display_order=26, stripe_product_id="prod_UFpG0ji2usZ6cK", stripe_price_id="price_1THJcSKAVaivWwqw1fDV6w0J"),
+                ToolDefinition(slug="cardreader", name="名刺リーダー", description="名刺画像→AI-OCR→連絡先データ化・CSV出力", monthly_price=100, display_order=27, stripe_product_id="prod_UFpHLtstUov7OI", stripe_price_id="price_1THJcSKAVaivWwqwRq9zzV2P"),
+                ToolDefinition(slug="voiceminutes", name="AI議事メモ（音声）", description="音声ファイル→文字起こし→議事録を自動生成", monthly_price=100, display_order=28, stripe_product_id="prod_UFpHU0WoyqXQtr", stripe_price_id="price_1THJcTKAVaivWwqwMUjyABc9"),
+                ToolDefinition(slug="mdviewer", name="Markdownビューアー", description="Markdownファイルを美しくレンダリング表示・PDF出力", monthly_price=100, display_order=29, icon_emoji="📝", stripe_product_id="prod_UHJeSny8oNDQ1Z", stripe_price_id="price_1TIl1PKAVaivWwqw8micL2QE"),
             ]
             db.add_all(tools)
             await db.commit()
-            print("[startup] Seeded 3 tool definitions.")
+            print("[startup] Seeded tool definitions.")
 
     yield
 
@@ -68,6 +89,27 @@ from app.tools.contentgen.router import router as contentgen_router
 from app.tools.webresearch.router import router as webresearch_router
 from app.tools.imagegen.router import router as imagegen_router
 from app.tools.chatbot.router import router as chatbot_router
+from app.tools.qrcode.router import router as qrcode_router
+from app.tools.fileconv.router import router as fileconv_router
+from app.tools.taskmanager.router import router as taskmanager_router
+from app.tools.formbuilder.router import router as formbuilder_router
+from app.tools.invoice.router import router as invoice_router
+from app.tools.translate.router import router as translate_router
+from app.tools.writing.router import router as writing_router
+from app.tools.contract.router import router as contract_router
+from app.tools.sns.router import router as sns_router
+from app.tools.minutes.router import router as minutes_router
+from app.tools.lpbuilder.router import router as lpbuilder_router
+from app.tools.booking.router import router as booking_router
+from app.tools.expense.router import router as expense_router
+from app.tools.seocheck.router import router as seocheck_router
+from app.tools.salesboard.router import router as salesboard_router
+from app.tools.estimate.router import router as estimate_router
+from app.tools.passgen.router import router as passgen_router
+from app.tools.dailyreport.router import router as dailyreport_router
+from app.tools.cardreader.router import router as cardreader_router
+from app.tools.voiceminutes.router import router as voiceminutes_router
+from app.tools.mdviewer.router import router as mdviewer_router
 
 app.include_router(auth_router)
 app.include_router(billing_router)
@@ -80,9 +122,41 @@ app.include_router(contentgen_router)
 app.include_router(webresearch_router)
 app.include_router(imagegen_router)
 app.include_router(chatbot_router)
+app.include_router(qrcode_router)
+app.include_router(fileconv_router)
+app.include_router(taskmanager_router)
+app.include_router(formbuilder_router)
+app.include_router(invoice_router)
+app.include_router(translate_router)
+app.include_router(writing_router)
+app.include_router(contract_router)
+app.include_router(sns_router)
+app.include_router(minutes_router)
+app.include_router(lpbuilder_router)
+app.include_router(booking_router)
+app.include_router(expense_router)
+app.include_router(seocheck_router)
+app.include_router(salesboard_router)
+app.include_router(estimate_router)
+app.include_router(passgen_router)
+app.include_router(dailyreport_router)
+app.include_router(cardreader_router)
+app.include_router(voiceminutes_router)
+app.include_router(mdviewer_router)
 app.include_router(community_router)
 
 templates = Jinja2Templates(directory="app/templates")
+
+
+@app.get("/guide", response_class=HTMLResponse)
+async def guide(request: Request, user=Depends(get_current_user)):
+    """使い方ガイドページ"""
+    if not user:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/auth/login", status_code=303)
+    return templates.TemplateResponse(
+        request, "guide.html", {"user": user, "page": "guide"}
+    )
 
 
 @app.get("/health")
