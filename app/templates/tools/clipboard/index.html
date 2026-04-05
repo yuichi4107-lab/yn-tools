@@ -80,6 +80,20 @@
         </div>
     </div>
 
+    <!-- スマホ接続QRコード（常時表示） -->
+    <div id="inlineQR" class="bg-white rounded-xl shadow-sm border p-5 mb-4 flex flex-col sm:flex-row items-center gap-6">
+        <div id="inlineQRImage" class="shrink-0"></div>
+        <div class="text-center sm:text-left">
+            <h3 class="font-bold text-gray-900 mb-1">スマホで接続</h3>
+            <p class="text-sm text-gray-500 mb-2">このQRコードをスマホのカメラでスキャンしてください</p>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 rounded-lg">
+                <span class="text-sm text-gray-500">ルームコード:</span>
+                <span id="inlineQRCode" class="text-xl font-mono font-bold text-indigo-700 tracking-widest"></span>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">または上のコードをスマホ側で手入力</p>
+        </div>
+    </div>
+
     <div class="grid lg:grid-cols-2 gap-4">
         <!-- 入力エリア -->
         <div class="bg-white rounded-xl shadow-sm border p-5">
@@ -184,6 +198,7 @@ function connectToRoom(code) {
         document.getElementById('roomSetup').classList.add('hidden');
         document.getElementById('clipboardArea').classList.remove('hidden');
         document.getElementById('roomCodeDisplay').textContent = code;
+        renderInlineQR(code);
     };
 
     ws.onmessage = (event) => {
@@ -297,7 +312,20 @@ async function copyClip(btn, text) {
     }
 }
 
-// --- QR Code ---
+// --- Inline QR (auto-shown on room create) ---
+function renderInlineQR(code) {
+    const url = `${location.origin}/tools/clipboard/?join=${code}`;
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+
+    const container = document.getElementById('inlineQRImage');
+    container.innerHTML = qr.createImgTag(5, 0);
+    container.querySelector('img').className = 'rounded-xl shadow-md';
+    document.getElementById('inlineQRCode').textContent = code;
+}
+
+// --- QR Code (modal) ---
 function showQR() {
     if (!currentRoom) return;
     const url = `${location.origin}/tools/clipboard/?join=${currentRoom}`;
