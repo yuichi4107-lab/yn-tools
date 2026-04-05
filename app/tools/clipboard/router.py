@@ -1,4 +1,4 @@
-"""クリップボード共有 - PC⇔スマホ間リアルタイム同期"""
+"""ク���ップボード共有 - PC⇔���マホ間リアルタイム同期"""
 
 import logging
 import secrets
@@ -11,7 +11,8 @@ from fastapi import APIRouter, Depends, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from app.auth.dependencies import require_tool_access
+from app.auth.dependencies import get_current_user, require_tool_access
+from app.database import get_db
 from app.users.models import User
 
 router = APIRouter(prefix="/tools/clipboard", tags=["clipboard"])
@@ -56,8 +57,9 @@ def _cleanup_expired():
 @router.get("/", response_class=HTMLResponse)
 async def clipboard_index(
     request: Request,
-    user: User = Depends(require_tool_access("clipboard")),
+    user: User | None = Depends(get_current_user),
 ):
+    """ページ表示はログイン不要（スマホからQRコードでアクセスするため）"""
     return templates.TemplateResponse(
         request, "tools/clipboard/index.html",
         {"user": user, "page": "clipboard"},
@@ -68,7 +70,7 @@ async def clipboard_index(
 async def create_room(
     user: User = Depends(require_tool_access("clipboard")),
 ):
-    """新しいルームを作成して4桁コードを返す"""
+    """新しいルームを作成（ログイン必���）"""
     _cleanup_expired()
     code = _generate_code()
     _rooms[code] = Room(code)
@@ -76,25 +78,21 @@ async def create_room(
 
 
 @router.post("/api/join-room")
-async def join_room(
-    request: Request,
-    user: User = Depends(require_tool_access("clipboard")),
-):
-    """ルームコードで参加確認"""
-    """ルームコードで参加確認"""
+async def join_room(request: Request):
+    """ルームコードで参加確認（ログイン不要）"""
     body = await request.json()
     code = body.get("code", "").strip()
     if code not in _rooms:
-        return {"ok": False, "error": "このコードのルームは見つかりません"}
+        return {"ok": False, "error": "このコードのル���ムは見つかりません"}
     room = _rooms[code]
     return {"ok": True, "clips": room.clips}
 
 
-# --- WebSocket for real-time sync ---
+# --- WebSocket for real-time sync (auth not required) ---
 
 @router.websocket("/ws/{room_code}")
 async def clipboard_ws(websocket: WebSocket, room_code: str):
-    """WebSocket: ルーム内のクリップボードをリアルタイム同期"""
+    """WebSocket: ��ーム内のクリップボードをリアルタイム同期"""
     logger.warning(f"WS connect attempt: room_code={room_code}, existing_rooms={list(_rooms.keys())}")
     if room_code not in _rooms:
         logger.warning(f"WS rejected: room {room_code} not found")
