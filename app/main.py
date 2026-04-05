@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="cardreader", name="名刺リーダー", description="名刺画像→AI-OCR→連絡先データ化・CSV出力", monthly_price=100, display_order=27, stripe_product_id="prod_UFpHLtstUov7OI", stripe_price_id="price_1THJcSKAVaivWwqwRq9zzV2P"),
                 ToolDefinition(slug="voiceminutes", name="AI議事メモ（音声）", description="音声ファイル→文字起こし→議事録を自動生成", monthly_price=100, display_order=28, stripe_product_id="prod_UFpHU0WoyqXQtr", stripe_price_id="price_1THJcTKAVaivWwqwMUjyABc9"),
                 ToolDefinition(slug="mdviewer", name="Markdownビューアー", description="Markdownファイルを美しくレンダリング表示・PDF出力", monthly_price=100, display_order=29, icon_emoji="📝", stripe_product_id="prod_UHJeSny8oNDQ1Z", stripe_price_id="price_1TIl1PKAVaivWwqw8micL2QE"),
-                ToolDefinition(slug="clipboard", name="クリップボード共有", description="PC⇔スマホ間でテキストをリアルタイム共有", monthly_price=100, display_order=30, icon_emoji="📋", stripe_product_id="", stripe_price_id=""),
+                ToolDefinition(slug="clipboard", name="クリップボード共有", description="PC⇔スマホ間でテキストをリアルタイム共有", monthly_price=100, display_order=30, icon_emoji="📋", stripe_product_id="prod_UHOTW4sIEZbnrj", stripe_price_id="price_1TIpgHKAVaivWwqwORmVyHaC"),
             ]
             db.add_all(tools)
             await db.commit()
