@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # Trial
     trial_days: int = 30
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
     @model_validator(mode="after")
     def fix_database_url(self):
