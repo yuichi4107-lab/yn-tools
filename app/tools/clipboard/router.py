@@ -1,8 +1,11 @@
 """クリップボード共有 - PC⇔スマホ間リアルタイム同期"""
 
+import logging
 import secrets
 import time
 from typing import Dict, Set
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -92,7 +95,9 @@ async def join_room(
 @router.websocket("/ws/{room_code}")
 async def clipboard_ws(websocket: WebSocket, room_code: str):
     """WebSocket: ルーム内のクリップボードをリアルタイム同期"""
+    logger.warning(f"WS connect attempt: room_code={room_code}, existing_rooms={list(_rooms.keys())}")
     if room_code not in _rooms:
+        logger.warning(f"WS rejected: room {room_code} not found")
         await websocket.close(code=4004)
         return
 
