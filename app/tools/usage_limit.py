@@ -21,6 +21,11 @@ MONTHLY_LIMITS: dict[str, int] = {
     "dailyreport": 30, # 回数
     "cardreader": 30,  # 回数（AI読取）
     "voiceminutes": 10, # 回数（音声議事録）
+    "jobposting": 30,   # 回数（求人票生成）
+    "dataclean": 20,    # 回数（データクリーニング）
+    "imgbatch": 20,     # 回数（画像一括加工）
+    "stepmail": 20,     # 回数（ステップメール生成）
+    "legalgen": 20,     # 回数（契約書・利用規約生成）
 }
 
 # ユーザー向け表示単位
@@ -39,6 +44,11 @@ UNIT_LABELS: dict[str, str] = {
     "dailyreport": "回",
     "cardreader": "回",
     "voiceminutes": "回",
+    "jobposting": "回",
+    "dataclean": "回",
+    "imgbatch": "回",
+    "stepmail": "回",
+    "legalgen": "回",
 }
 
 
@@ -161,6 +171,58 @@ async def get_monthly_usage(db: AsyncSession, user_id: int, tool: str) -> int:
         r = await db.execute(
             select(func.count(VoiceMinutesHistory.id))
             .where(VoiceMinutesHistory.user_id == user_id, VoiceMinutesHistory.created_at >= start)
+        )
+        return int(r.scalar() or 0)
+
+    if tool == "jobposting":
+        from app.tools.jobposting.models import JobPosting
+        r = await db.execute(
+            select(func.count(JobPosting.id))
+            .where(JobPosting.user_id == user_id, JobPosting.created_at >= start)
+        )
+        return int(r.scalar() or 0)
+
+    if tool == "dataclean":
+        from app.tools.dataclean.models import DataCleanJob
+        r = await db.execute(
+            select(func.count(DataCleanJob.id))
+            .where(
+                DataCleanJob.user_id == user_id,
+                DataCleanJob.created_at >= start,
+                DataCleanJob.status == "done",
+            )
+        )
+        return int(r.scalar() or 0)
+
+    if tool == "imgbatch":
+        from app.tools.imgbatch.models import ImgBatchJob
+        r = await db.execute(
+            select(func.count(ImgBatchJob.id))
+            .where(
+                ImgBatchJob.user_id == user_id,
+                ImgBatchJob.created_at >= start,
+                ImgBatchJob.status == "done",
+            )
+        )
+        return int(r.scalar() or 0)
+
+    if tool == "stepmail":
+        from app.tools.stepmail.models import StepMailSeries
+        r = await db.execute(
+            select(func.count(StepMailSeries.id))
+            .where(
+                StepMailSeries.user_id == user_id,
+                StepMailSeries.created_at >= start,
+                StepMailSeries.status == "generated",
+            )
+        )
+        return int(r.scalar() or 0)
+
+    if tool == "legalgen":
+        from app.tools.legalgen.models import LegalDocument
+        r = await db.execute(
+            select(func.count(LegalDocument.id))
+            .where(LegalDocument.user_id == user_id, LegalDocument.created_at >= start)
         )
         return int(r.scalar() or 0)
 

@@ -181,4 +181,19 @@ function copyResult() {
     </div>
     {% endif %}
 </div>
+
+<script>
+// legalgenツールからの連携: sessionStorageにテキストがあれば契約書テキスト欄に設定
+(function() {
+    const text = sessionStorage.getItem('legalgen_contract_text');
+    if (text) {
+        const textarea = document.querySelector('textarea[name="text"]');
+        if (textarea) {
+            textarea.value = text;
+            sessionStorage.removeItem('legalgen_contract_text');
+            textarea.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+    }
+})();
+</script>
 {% endblock %}

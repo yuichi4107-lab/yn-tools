@@ -61,6 +61,7 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="voiceminutes", name="AI議事メモ（音声）", description="音声ファイル→文字起こし→議事録を自動生成", monthly_price=100, display_order=28, stripe_product_id="prod_UFpHU0WoyqXQtr", stripe_price_id="price_1THJcTKAVaivWwqwMUjyABc9"),
                 ToolDefinition(slug="mdviewer", name="Markdownビューアー", description="Markdownファイルを美しくレンダリング表示・PDF出力", monthly_price=100, display_order=29, icon_emoji="📝", stripe_product_id="prod_UHJeSny8oNDQ1Z", stripe_price_id="price_1TIl1PKAVaivWwqw8micL2QE"),
                 ToolDefinition(slug="clipboard", name="クリップボード共有", description="PC⇔スマホ間でテキストをリアルタイム共有", monthly_price=100, display_order=30, icon_emoji="📋", stripe_product_id="prod_UHOTW4sIEZbnrj", stripe_price_id="price_1TIpgHKAVaivWwqwORmVyHaC"),
+                ToolDefinition(slug="shift", name="シフト作成", description="従業員シフト表の作成・AI自動生成・Excel出力", monthly_price=100, display_order=31, icon_emoji="📅", stripe_product_id="prod_UJ5Mt8j7by3gW5", stripe_price_id="price_1TKTBdKAVaivWwqwC4aMDZLk"),
             ]
             db.add_all(tools)
             await db.commit()
@@ -112,6 +113,12 @@ from app.tools.cardreader.router import router as cardreader_router
 from app.tools.voiceminutes.router import router as voiceminutes_router
 from app.tools.mdviewer.router import router as mdviewer_router
 from app.tools.clipboard.router import router as clipboard_router
+from app.tools.shift.router import router as shift_router
+from app.tools.jobposting.router import router as jobposting_router
+from app.tools.dataclean.router import router as dataclean_router
+from app.tools.imgbatch.router import router as imgbatch_router
+from app.tools.stepmail.router import router as stepmail_router
+from app.tools.legalgen.router import router as legalgen_router
 
 app.include_router(auth_router)
 app.include_router(billing_router)
@@ -146,6 +153,13 @@ app.include_router(cardreader_router)
 app.include_router(voiceminutes_router)
 app.include_router(mdviewer_router)
 app.include_router(clipboard_router)
+app.include_router(shift_router)
+app.include_router(jobposting_router)
+app.include_router(dataclean_router)
+app.include_router(imgbatch_router)
+app.include_router(stepmail_router)
+app.include_router(legalgen_router)
+# display_order=32 (jobposting), 33 (dataclean), 34 (imgbatch), 35 (stepmail), 36 (legalgen) - ToolDefinition シードは Stripe Price ID 確定後に追加
 app.include_router(community_router)
 
 templates = Jinja2Templates(directory="app/templates")
