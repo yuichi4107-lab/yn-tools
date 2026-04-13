@@ -105,6 +105,31 @@
                     <button onclick="showTool('voiceminutes')" id="nav-voiceminutes" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
                         <span>🎙️</span><span>AI議事メモ（音声）</span>
                     </button>
+                    <div class="border-t my-1"></div>
+                    <button onclick="showTool('mdviewer')" id="nav-mdviewer" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📖</span><span>Markdownビューアー</span>
+                    </button>
+                    <button onclick="showTool('clipboard')" id="nav-clipboard" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📋</span><span>クリップボード共有</span>
+                    </button>
+                    <button onclick="showTool('shift')" id="nav-shift" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📅</span><span>シフト作成</span>
+                    </button>
+                    <button onclick="showTool('jobposting')" id="nav-jobposting" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📄</span><span>求人票ジェネレーター</span>
+                    </button>
+                    <button onclick="showTool('dataclean')" id="nav-dataclean" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>🧹</span><span>データクリーニング</span>
+                    </button>
+                    <button onclick="showTool('imgbatch')" id="nav-imgbatch" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>🖼️</span><span>画像一括加工</span>
+                    </button>
+                    <button onclick="showTool('stepmail')" id="nav-stepmail" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📧</span><span>ステップメール</span>
+                    </button>
+                    <button onclick="showTool('legalgen')" id="nav-legalgen" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>⚖️</span><span>契約書・規約作成</span>
+                    </button>
                 </div>
             </nav>
         </div>
@@ -1091,6 +1116,202 @@
                 </div>
             </div>
 
+            <!-- Markdownビューアー -->
+            <div id="tool-mdviewer" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-xl">📖</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Markdownビューアー</h2>
+                            <p class="text-sm text-gray-500">MarkdownファイルをHTMLに変換して美しく表示・PDF出力</p>
+                        </div>
+                        <a href="/tools/mdviewer/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-800 mb-5">
+                        <strong>このツールでできること：</strong>MarkdownファイルをアップロードまたはテキストをそのままペーストするだけでHTMLとして美しくレンダリング。スタイルを選んでPDF出力や印刷にも対応します。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-gray-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">Markdownを入力または貼り付け</p><p class="text-sm text-gray-500">.mdファイルをアップロードするか、Markdownテキストを直接テキストエリアに貼り付けます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-gray-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">プレビューを確認</p><p class="text-sm text-gray-500">見出し・リスト・コードブロック・テーブルなどがリアルタイムで整形されたプレビューで確認できます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-gray-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">PDFまたはHTMLでエクスポート</p><p class="text-sm text-gray-500">「PDFとして保存」ボタンでそのままPDF化。ブラウザの印刷機能と組み合わせてきれいに出力できます。</p></div></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- クリップボード共有 -->
+            <div id="tool-clipboard" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">📋</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">クリップボード共有</h2>
+                            <p class="text-sm text-gray-500">PC⇔スマホ間でテキストをリアルタイム同期</p>
+                        </div>
+                        <a href="/tools/clipboard/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg px-4 py-3 text-sm text-blue-800 mb-5">
+                        <strong>このツールでできること：</strong>PCで入力したテキストをスマホでそのまま受け取り、またその逆も可能。QRコードで共有URLを即座に開けます。デバイス間のコピペを劇的に簡略化します。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">PCでテキストを入力・保存</p><p class="text-sm text-gray-500">共有したいテキストを入力して「保存」。URLまたは表示されるQRコードをスマホで読み取ります。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">スマホで同じURLを開く</p><p class="text-sm text-gray-500">QRコードを読み取るかURLをスマホで開くと、同じテキストがリアルタイムで表示されます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">コピーして利用</p><p class="text-sm text-gray-500">スマホ側でテキストをコピーしてアプリに貼り付け。逆方向（スマホ→PC）の共有も同様に行えます。</p></div></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- シフト作成 -->
+            <div id="tool-shift" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-xl">📅</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">シフト作成</h2>
+                            <p class="text-sm text-gray-500">従業員シフト表の作成・AI自動生成・Excel出力</p>
+                        </div>
+                        <a href="/tools/shift/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-teal-50 rounded-lg px-4 py-3 text-sm text-teal-800 mb-5">
+                        <strong>このツールでできること：</strong>従業員と希望シフトを登録するだけで、AIが最適なシフト表を自動生成。手動編集も可能で、完成したシフト表はExcelでエクスポートできます。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-teal-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">従業員と希望シフトを登録</p><p class="text-sm text-gray-500">スタッフ名・勤務可能日時・希望休を入力します。必要人数や時間帯も設定できます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-teal-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">AIでシフトを自動生成</p><p class="text-sm text-gray-500">「自動生成」ボタンを押すと、希望・必要人数・労働時間制約を考慮した最適シフトを提案します。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-teal-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">確認・編集してExcel出力</p><p class="text-sm text-gray-500">生成結果を確認して必要なら手動調整。「Excelエクスポート」でそのまま印刷・配布できます。</p></div></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 求人票ジェネレーター -->
+            <div id="tool-jobposting" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-xl">📄</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">求人票ジェネレーター</h2>
+                            <p class="text-sm text-gray-500">9業種テンプレートからIndeed/タウンワーク/ハローワーク形式をAI生成</p>
+                        </div>
+                        <a href="/tools/jobposting/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-green-50 rounded-lg px-4 py-3 text-sm text-green-800 mb-5">
+                        <strong>このツールでできること：</strong>飲食・小売・IT・介護など9業種のテンプレートから選び、基本情報を入力するだけでIndeed・タウンワーク・ハローワーク向けの求人票をAIが自動生成します。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">業種と掲載媒体を選択</p><p class="text-sm text-gray-500">9つの業種テンプレートから自社に合うものを選び、掲載先（Indeed/タウンワーク/ハローワーク）を指定します。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">基本情報を入力してAI生成</p><p class="text-sm text-gray-500">職種・給与・勤務地・雇用形態などを入力して「生成」。各媒体の文字数・フォーマットに最適化された求人票が作成されます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">編集してコピー・保存</p><p class="text-sm text-gray-500">生成結果を確認・微調整してコピー。各媒体の入力フォームにそのまま貼り付けられます。</p></div></li>
+                    </ol>
+                    <div class="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-600">
+                        <strong>月次制限：</strong>月20回まで。残りはダッシュボード右上で確認できます。
+                    </div>
+                </div>
+            </div>
+
+            <!-- データクリーニング -->
+            <div id="tool-dataclean" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center text-xl">🧹</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">データクリーニング</h2>
+                            <p class="text-sm text-gray-500">CSV/Excelの重複削除・表記揺れ統一・差分プレビュー</p>
+                        </div>
+                        <a href="/tools/dataclean/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-yellow-50 rounded-lg px-4 py-3 text-sm text-yellow-800 mb-5">
+                        <strong>このツールでできること：</strong>CSV/Excelファイルをアップロードして重複行の削除・表記揺れの統一（全半角・大文字小文字）・空白セルの処理などを自動実行。クリーニング前後の差分をプレビューで確認してから適用できます。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">CSV/Excelファイルをアップロード</p><p class="text-sm text-gray-500">ドラッグ＆ドロップまたはファイル選択でCSV・Excelをアップロード。プレビューで内容を確認します。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">クリーニング内容を選択して実行</p><p class="text-sm text-gray-500">重複削除・表記揺れ統一・空白処理などの処理を選択して「クリーニング実行」。変更前後の差分がハイライト表示されます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">確認してダウンロード</p><p class="text-sm text-gray-500">差分プレビューで問題がないことを確認してからダウンロード。元のファイル形式を維持して出力します。</p></div></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 画像一括加工 -->
+            <div id="tool-imgbatch" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">🖼️</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">画像一括加工</h2>
+                            <p class="text-sm text-gray-500">SNS9プリセットリサイズ・背景除去・ZIP一括ダウンロード</p>
+                        </div>
+                        <a href="/tools/imgbatch/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg px-4 py-3 text-sm text-purple-800 mb-5">
+                        <strong>このツールでできること：</strong>複数の画像をドラッグ＆ドロップでアップロードし、Instagram・X・Facebook等9つのSNSプリセットサイズに一括リサイズ。背景除去も一括処理でき、ZIPでまとめてダウンロードできます。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">画像をドラッグ＆ドロップ</p><p class="text-sm text-gray-500">複数の画像ファイルをまとめてドラッグ＆ドロップ。JPG・PNG・WebP等の主要形式に対応しています。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">加工内容を選択</p><p class="text-sm text-gray-500">SNSプリセット（Instagram正方形・ストーリー、X投稿等9種）でリサイズ、または背景除去を選択します。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">ZIPで一括ダウンロード</p><p class="text-sm text-gray-500">加工完了後に「ZIPダウンロード」で全ファイルをまとめて取得。各ファイルの個別ダウンロードも可能です。</p></div></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- ステップメール -->
+            <div id="tool-stepmail" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-xl">📧</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">ステップメール</h2>
+                            <p class="text-sm text-gray-500">8種ビジネス目的からシリーズをAI一括生成・個別編集</p>
+                        </div>
+                        <a href="/tools/stepmail/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg px-4 py-3 text-sm text-orange-800 mb-5">
+                        <strong>このツールでできること：</strong>新規顧客獲得・ナーチャリング・購入後フォロー等8種のビジネス目的を選ぶだけで、配信日数・本数を指定したステップメールシリーズをAIが一括生成。各メールを個別に編集して保存できます。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">目的・ターゲット・配信設定を入力</p><p class="text-sm text-gray-500">8種の目的（ウェルカム・ナーチャリング等）から選択し、商品・サービス名、ターゲット層、配信ステップ数を設定します。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">AIでシリーズを一括生成</p><p class="text-sm text-gray-500">「生成」ボタンを押すと、件名・本文・配信タイミングが最適化されたメールシリーズが一括で作成されます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">各メールを確認・編集して保存</p><p class="text-sm text-gray-500">生成された各メールをクリックして個別に編集。保存したシリーズはいつでも参照・再編集できます。</p></div></li>
+                    </ol>
+                    <div class="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-600">
+                        <strong>月次制限：</strong>月20回まで。残りはダッシュボード右上で確認できます。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 契約書・規約作成 -->
+            <div id="tool-legalgen" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-xl">⚖️</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">契約書・規約作成</h2>
+                            <p class="text-sm text-gray-500">7種の契約書/利用規約をAI生成・Word/PDF出力</p>
+                        </div>
+                        <a href="/tools/legalgen/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-red-50 rounded-lg px-4 py-3 text-sm text-red-800 mb-5">
+                        <strong>このツールでできること：</strong>業務委託契約・秘密保持契約・利用規約・プライバシーポリシー等7種のテンプレートから選んで必要事項を入力するだけで、法的に整合した文書をAIが生成。WordとPDFでダウンロードできます。
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-3 mb-6">
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><div><p class="font-medium text-sm">文書種類を選択</p><p class="text-sm text-gray-500">業務委託契約書・秘密保持契約書・利用規約・プライバシーポリシー等7種から作成したい文書を選びます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><div><p class="font-medium text-sm">必要事項を入力してAI生成</p><p class="text-sm text-gray-500">当事者名・サービス内容・条件等を入力して「生成」。テンプレートに基づいた文書が自動作成されます。</p></div></li>
+                        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><div><p class="font-medium text-sm">内容を確認してWord/PDFで出力</p><p class="text-sm text-gray-500">生成された文書を確認・編集してWord(.docx)またはPDFとしてダウンロード。そのまま使用できます。</p></div></li>
+                    </ol>
+                    <div class="bg-amber-50 rounded-lg px-4 py-3 text-sm text-amber-800">
+                        <strong>注意：</strong>AIによる参考文書です。法的助言ではありません。重要な契約は必ず専門家にご確認ください。
+                    </div>
+                    <div class="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-600 mt-3">
+                        <strong>月次制限：</strong>月20回まで。残りはダッシュボード右上で確認できます。
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -1115,7 +1336,7 @@ function showTool(toolId) {
 
 // 初期表示：URLハッシュまたはデフォルト
 const hash = location.hash.replace('#', '');
-const validTools = ['sales','mailer','gems','docai','contentgen','webresearch','imagegen','chatbot','qrcode','fileconv','taskmanager','formbuilder','invoice','translate','writing','contract','sns','minutes','lpbuilder','booking','expense','seocheck','salesboard','estimate','passgen','dailyreport','cardreader','voiceminutes'];
+const validTools = ['sales','mailer','gems','docai','contentgen','webresearch','imagegen','chatbot','qrcode','fileconv','taskmanager','formbuilder','invoice','translate','writing','contract','sns','minutes','lpbuilder','booking','expense','seocheck','salesboard','estimate','passgen','dailyreport','cardreader','voiceminutes','mdviewer','clipboard','shift','jobposting','dataclean','imgbatch','stepmail','legalgen'];
 showTool(validTools.includes(hash) ? hash : 'sales');
 </script>
 {% endblock %}
