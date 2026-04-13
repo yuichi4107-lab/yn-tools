@@ -24,13 +24,13 @@ async def lifespan(app: FastAPI):
         if count:
             print(f"[startup] Seeded {count} GEMS/GPT items.")
 
-    # Seed tool definitions
+    # Seed tool definitions (upsert by slug — 既存は触らず、未登録slugのみ追加)
     from app.users.models import ToolDefinition
     from sqlalchemy import select
     async with _session() as db:
-        existing = await db.execute(select(ToolDefinition))
-        if not existing.scalars().first():
-            tools = [
+        result = await db.execute(select(ToolDefinition.slug))
+        existing_slugs = {row[0] for row in result.all()}
+        tools_all = [
                 ToolDefinition(slug="sales", name="営業自動化", description="企業リスト・HP巡回・CRM・メール営業", monthly_price=100, display_order=1, icon_emoji="📼", stripe_product_id="prod_UDDIwP4jsIEPyk", stripe_price_id="price_1TEmrmKAVaivWwqwOO0NPLql"),
                 ToolDefinition(slug="mailer", name="メール送信", description="テンプレメール一括送信・履歴管理", monthly_price=100, display_order=2, icon_emoji="✉", stripe_product_id="prod_UDDISonnzcKLmO", stripe_price_id="price_1TEms7KAVaivWwqwabRK9pJb"),
                 ToolDefinition(slug="gems", name="GEMS/GPTライブラリ", description="AI業務改善プロンプト200本", monthly_price=100, display_order=3, icon_emoji="✨", stripe_product_id="prod_UDDKTlnnnfoPeR", stripe_price_id="price_1TEmtNKAVaivWwqwmeG7NnWK"),
@@ -62,10 +62,17 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="mdviewer", name="Markdownビューアー", description="Markdownファイルを美しくレンダリング表示・PDF出力", monthly_price=100, display_order=29, icon_emoji="📝", stripe_product_id="prod_UHJeSny8oNDQ1Z", stripe_price_id="price_1TIl1PKAVaivWwqw8micL2QE"),
                 ToolDefinition(slug="clipboard", name="クリップボード共有", description="PC⇔スマホ間でテキストをリアルタイム共有", monthly_price=100, display_order=30, icon_emoji="📋", stripe_product_id="prod_UHOTW4sIEZbnrj", stripe_price_id="price_1TIpgHKAVaivWwqwORmVyHaC"),
                 ToolDefinition(slug="shift", name="シフト作成", description="従業員シフト表の作成・AI自動生成・Excel出力", monthly_price=100, display_order=31, icon_emoji="📅", stripe_product_id="prod_UJ5Mt8j7by3gW5", stripe_price_id="price_1TKTBdKAVaivWwqwC4aMDZLk"),
-            ]
-            db.add_all(tools)
+                ToolDefinition(slug="jobposting", name="求人票ジェネレーター", description="9業種テンプレートから Indeed/タウンワーク/ハローワーク形式の求人票をAI生成", monthly_price=100, display_order=32, icon_emoji="📋", stripe_product_id="prod_UKKGmqY48PCrmt", stripe_price_id="price_1TLfcDKAVaivWwqwl46KM8C5"),
+                ToolDefinition(slug="dataclean", name="データクリーニング", description="CSV/Excelの重複削除・表記揺れ統一・差分プレビュー", monthly_price=100, display_order=33, icon_emoji="🧹", stripe_product_id="prod_UKKGIIaDu8YNgZ", stripe_price_id="price_1TLfcEKAVaivWwqwY0gFaph5"),
+                ToolDefinition(slug="imgbatch", name="画像一括加工", description="D&DでSNS9プリセットリサイズ・背景除去・ZIP一括ダウンロード", monthly_price=100, display_order=34, icon_emoji="🖼️", stripe_product_id="prod_UKKGLbx6ywjE7J", stripe_price_id="price_1TLfcEKAVaivWwqw3OwnDNg5"),
+                ToolDefinition(slug="stepmail", name="ステップメール作成", description="8種ビジネス目的からシリーズをAI一括生成・個別編集", monthly_price=100, display_order=35, icon_emoji="📨", stripe_product_id="prod_UKKGyRIRa8KfMd", stripe_price_id="price_1TLfcFKAVaivWwqwJUuTuIjw"),
+                ToolDefinition(slug="legalgen", name="契約書・利用規約自動作成", description="7種の契約書/利用規約をAI生成。Word/PDF出力対応", monthly_price=100, display_order=36, icon_emoji="⚖️", stripe_product_id="prod_UKKGM9lrOnEbOe", stripe_price_id="price_1TLfcGKAVaivWwqw2CsdiFQu"),
+        ]
+        new_tools = [t for t in tools_all if t.slug not in existing_slugs]
+        if new_tools:
+            db.add_all(new_tools)
             await db.commit()
-            print("[startup] Seeded tool definitions.")
+            print(f"[startup] Seeded {len(new_tools)} tool definitions: {[t.slug for t in new_tools]}")
 
     yield
 

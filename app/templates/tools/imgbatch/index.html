@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="text-sm text-gray-500">今月の利用回数:</span>
         <span class="text-sm font-semibold text-gray-900">{{ monthly_used }} / {{ monthly_limit }} 回</span>
         <div class="flex-1 bg-gray-200 rounded-full h-1.5 max-w-32">
-            <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ [monthly_used / monthly_limit * 100, 100] | min }}%"></div>
+            <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ [monthly_used / (monthly_limit or 1) * 100, 100] | min }}%"></div>
         </div>
     </div>
 
