@@ -102,5 +102,9 @@
   "mdviewer": {
     "product_id": "prod_UHJbhIzYkFTo6x",
     "price_id": "price_1TIkyhKAVaivWwqwYyXh6YDx"
+  },
+  "epubcheck": {
+    "product_id": "prod_UQQ4B0EDbgzpCl",
+    "price_id": "price_1TRZEhKAVaivWwqwoiUavxgj"
   }
 }
