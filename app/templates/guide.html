@@ -5,7 +5,7 @@
 <div class="mb-8">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">使い方ガイド</h1>
-        <p class="text-gray-500 mt-1">YN Tools 全28ツールの使い方を確認できます</p>
+        <p class="text-gray-500 mt-1">YN Tools 全37ツールの使い方を確認できます</p>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6">
@@ -129,6 +129,10 @@
                     </button>
                     <button onclick="showTool('legalgen')" id="nav-legalgen" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
                         <span>⚖️</span><span>契約書・規約作成</span>
+                    </button>
+                    <div class="border-t my-1"></div>
+                    <button onclick="showTool('epubcheck')" id="nav-epubcheck" class="tool-nav-btn w-full text-left px-4 py-2.5 text-sm flex items-center gap-2.5 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                        <span>📚</span><span>EPUBバリデーター</span>
                     </button>
                 </div>
             </nav>
@@ -1312,6 +1316,160 @@
                 </div>
             </div>
 
+            <!-- EPUBバリデーター -->
+            <div id="tool-epubcheck" class="tool-section hidden">
+                <div class="bg-white rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-xl">📚</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">EPUBバリデーター</h2>
+                            <p class="text-sm text-gray-500">KDP出版前のEPUBを17項目で即時チェック・リジェクト防止</p>
+                        </div>
+                        <a href="/tools/epubcheck/" class="ml-auto bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition">ツールを開く</a>
+                    </div>
+                    <div class="bg-teal-50 rounded-lg px-4 py-3 text-sm text-teal-800 mb-5">
+                        <strong>このツールでできること：</strong>
+                        EPUBファイルをアップロードするだけで、KDP出版前の規格違反・破損・表紙画像・フォント埋め込み・固定レイアウトを17項目で即時チェックします。出版申請のリジェクトを未然に防ぎます。
+                    </div>
+
+                    <h3 class="font-semibold text-gray-800 mb-3">対応フォーマット</h3>
+                    <ul class="space-y-1 mb-5 text-sm text-gray-600">
+                        <li class="flex gap-2"><span class="text-teal-500 mt-0.5">▶</span>ファイル形式: <strong>.epub</strong>（EPUB2 / EPUB3 両対応）</li>
+                        <li class="flex gap-2"><span class="text-teal-500 mt-0.5">▶</span>ファイルサイズ上限: <strong>200MB</strong>（KDP固定レイアウト漫画対応）</li>
+                        <li class="flex gap-2"><span class="text-teal-500 mt-0.5">▶</span>アップロードファイルはメモリ上で処理後、即削除します（ディスク保存なし）</li>
+                    </ul>
+
+                    <h3 class="font-semibold text-gray-800 mb-3">チェック項目（全17項目）</h3>
+                    <div class="mb-5">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">基本チェック（Level 1 — 10項目）</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-left">
+                                        <th class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200">チェック項目</th>
+                                        <th class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200">内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">ZIP構造</td><td class="px-3 py-2 border border-gray-200 text-gray-600">EPUBファイルが正常なZIPとして開けるか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">mimetype</td><td class="px-3 py-2 border border-gray-200 text-gray-600">先頭ファイルが無圧縮かつ正しいMIMEタイプか</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">container.xml</td><td class="px-3 py-2 border border-gray-200 text-gray-600">META-INF/container.xmlが存在しOPFパスを返すか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">OPF構造</td><td class="px-3 py-2 border border-gray-200 text-gray-600">OPFファイルが存在しXML構文が正しいか</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">dc:title</td><td class="px-3 py-2 border border-gray-200 text-gray-600">OPFにタイトルメタデータが存在するか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">dc:creator</td><td class="px-3 py-2 border border-gray-200 text-gray-600">著者メタデータが存在するか</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">dc:language</td><td class="px-3 py-2 border border-gray-200 text-gray-600">言語メタデータが存在するか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">dc:identifier</td><td class="px-3 py-2 border border-gray-200 text-gray-600">識別子メタデータが存在するか</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">マニフェスト参照切れ</td><td class="px-3 py-2 border border-gray-200 text-gray-600">manifest内の全hrefがZIP内に存在するか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">NAV / NCX</td><td class="px-3 py-2 border border-gray-200 text-gray-600">EPUB3ならNAV、EPUB2ならNCXが存在するか</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">KDP特化チェック（Level 2 — 7項目）</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-left">
+                                        <th class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200">チェック項目</th>
+                                        <th class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200">内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">表紙画像</td><td class="px-3 py-2 border border-gray-200 text-gray-600">cover-imageが指定・存在するか</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">表紙サイズ</td><td class="px-3 py-2 border border-gray-200 text-gray-600">最小辺1000px以上・KDP推奨サイズ範囲内か</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">固定レイアウト判定</td><td class="px-3 py-2 border border-gray-200 text-gray-600">pre-paginatedの固定レイアウトを検出（情報提供）</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">フォント埋め込み</td><td class="px-3 py-2 border border-gray-200 text-gray-600">フォントファイルがmanifestに含まれるか</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">ファイルサイズ</td><td class="px-3 py-2 border border-gray-200 text-gray-600">50MB以上はWARN、200MB以上はFAIL（KDP制限）</td></tr>
+                                    <tr class="bg-gray-50"><td class="px-3 py-2 border border-gray-200 font-medium">画像枚数</td><td class="px-3 py-2 border border-gray-200 text-gray-600">EPUB内の画像総数（情報提供）</td></tr>
+                                    <tr><td class="px-3 py-2 border border-gray-200 font-medium">文字数概算</td><td class="px-3 py-2 border border-gray-200 text-gray-600">XHTMLから抽出した概算文字数（情報提供）</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h3 class="font-semibold text-gray-800 mb-3">基本的な使い方</h3>
+                    <ol class="space-y-4 mb-6">
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                            <div>
+                                <p class="font-medium text-sm text-gray-800">EPUBファイルを準備する</p>
+                                <p class="text-sm text-gray-500 mt-0.5">KDP申請前の .epub ファイルを用意します。ファイルサイズが200MB以下であることを確認してください。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                            <div>
+                                <p class="font-medium text-sm text-gray-800">アップロードエリアにドラッグ&amp;ドロップ</p>
+                                <p class="text-sm text-gray-500 mt-0.5">ファイルをアップロードエリアにドラッグ&amp;ドロップするか、クリックしてファイルを選択します。.epub 以外のファイルは受け付けません。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                            <div>
+                                <p class="font-medium text-sm text-gray-800">「チェック開始」ボタンをクリック</p>
+                                <p class="text-sm text-gray-500 mt-0.5">バリデーションが開始されます。197MBのファイルでも通常30秒以内に完了します。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                            <div>
+                                <p class="font-medium text-sm text-gray-800">結果を確認する（PASS / WARN / FAIL の3段階）</p>
+                                <p class="text-sm text-gray-500 mt-0.5">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded mr-1">PASS</span> 問題なし /
+                                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded mx-1">WARN</span> 改善推奨 /
+                                    <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded mx-1">FAIL</span> KDP申請前に修正必要
+                                </p>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <h3 class="font-semibold text-gray-800 mb-3">使用例</h3>
+                    <div class="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-700 mb-6">
+                        <p class="font-medium mb-2">manga-career-restart vol1（197MB）でのチェック結果</p>
+                        <div class="flex flex-wrap gap-3 text-xs">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded font-medium">PASS: 15項目</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded font-medium">WARN: 2項目</span>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded font-medium">FAIL: 0項目</span>
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded font-medium">スコア: 94.1</span>
+                        </div>
+                        <p class="text-gray-500 mt-2">WARN内訳: 固定レイアウト検出（pre-paginated / 情報提供）、ファイルサイズ警告（197MB / 50MB超）。どちらもKDP申請には影響なし。</p>
+                    </div>
+
+                    <h3 class="font-semibold text-gray-800 mb-3">よくある質問</h3>
+                    <div class="space-y-3">
+                        <details class="bg-gray-50 rounded-lg px-4 py-3 group">
+                            <summary class="font-medium text-sm text-gray-800 cursor-pointer flex items-center justify-between">
+                                アップロードしたファイルは保存されますか？
+                                <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <p class="text-sm text-gray-500 mt-2">いいえ。アップロードされたファイルはメモリ上でのみ処理され、バリデーション完了後に即削除されます。ディスクへの保存は一切行いません。</p>
+                        </details>
+                        <details class="bg-gray-50 rounded-lg px-4 py-3 group">
+                            <summary class="font-medium text-sm text-gray-800 cursor-pointer flex items-center justify-between">
+                                200MBを超えるEPUBはどうすれば？
+                                <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <p class="text-sm text-gray-500 mt-2">KDP自体の上限も200MBのため、まずEPUB内の画像を圧縮することを推奨します。画像一括加工ツールでリサイズ後に再パッケージしてください。</p>
+                        </details>
+                        <details class="bg-gray-50 rounded-lg px-4 py-3 group">
+                            <summary class="font-medium text-sm text-gray-800 cursor-pointer flex items-center justify-between">
+                                WARN が出た場合はどうすれば？
+                                <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <p class="text-sm text-gray-500 mt-2">WARNはKDP申請に通ることが多いですが、改善推奨のサインです。固定レイアウト検出・ファイルサイズ警告などは情報提供目的のWARNで、通常は申請に影響しません。</p>
+                        </details>
+                        <details class="bg-gray-50 rounded-lg px-4 py-3 group">
+                            <summary class="font-medium text-sm text-gray-800 cursor-pointer flex items-center justify-between">
+                                公式の epubcheck（W3C製）と同等ですか？
+                                <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <p class="text-sm text-gray-500 mt-2">現バージョンはPython実装のLevel 2（KDP特化17項目）です。W3C公式のepubcheck.jar（Java製）は最も厳密ですが、本ツールはKDP申請前の実用チェックに特化しています。次フェーズでepubcheck.jar統合（Level 3）を予定しています。</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -1336,7 +1494,7 @@ function showTool(toolId) {
 
 // 初期表示：URLハッシュまたはデフォルト
 const hash = location.hash.replace('#', '');
-const validTools = ['sales','mailer','gems','docai','contentgen','webresearch','imagegen','chatbot','qrcode','fileconv','taskmanager','formbuilder','invoice','translate','writing','contract','sns','minutes','lpbuilder','booking','expense','seocheck','salesboard','estimate','passgen','dailyreport','cardreader','voiceminutes','mdviewer','clipboard','shift','jobposting','dataclean','imgbatch','stepmail','legalgen'];
+const validTools = ['sales','mailer','gems','docai','contentgen','webresearch','imagegen','chatbot','qrcode','fileconv','taskmanager','formbuilder','invoice','translate','writing','contract','sns','minutes','lpbuilder','booking','expense','seocheck','salesboard','estimate','passgen','dailyreport','cardreader','voiceminutes','mdviewer','clipboard','shift','jobposting','dataclean','imgbatch','stepmail','legalgen','epubcheck'];
 showTool(validTools.includes(hash) ? hash : 'sales');
 </script>
 {% endblock %}

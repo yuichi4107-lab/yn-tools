@@ -67,6 +67,7 @@ async def lifespan(app: FastAPI):
                 ToolDefinition(slug="imgbatch", name="画像一括加工", description="D&DでSNS9プリセットリサイズ・背景除去・ZIP一括ダウンロード", monthly_price=100, display_order=34, icon_emoji="🖼️", stripe_product_id="prod_UKKGLbx6ywjE7J", stripe_price_id="price_1TLfcEKAVaivWwqw3OwnDNg5"),
                 ToolDefinition(slug="stepmail", name="ステップメール作成", description="8種ビジネス目的からシリーズをAI一括生成・個別編集", monthly_price=100, display_order=35, icon_emoji="📨", stripe_product_id="prod_UKKGyRIRa8KfMd", stripe_price_id="price_1TLfcFKAVaivWwqwJUuTuIjw"),
                 ToolDefinition(slug="legalgen", name="契約書・利用規約自動作成", description="7種の契約書/利用規約をAI生成。Word/PDF出力対応", monthly_price=100, display_order=36, icon_emoji="⚖️", stripe_product_id="prod_UKKGM9lrOnEbOe", stripe_price_id="price_1TLfcGKAVaivWwqw2CsdiFQu"),
+                ToolDefinition(slug="epubcheck", name="EPUBバリデーター", description="KDP出版前の EPUB 破損・規格違反・表紙・フォントを即時チェック", monthly_price=100, display_order=37, icon_emoji="📚", stripe_product_id="prod_UQQ6dAhplgZn31", stripe_price_id="price_1TRZG2KAVaivWwqw3aVVjJSd"),
         ]
         new_tools = [t for t in tools_all if t.slug not in existing_slugs]
         if new_tools:
@@ -126,6 +127,7 @@ from app.tools.dataclean.router import router as dataclean_router
 from app.tools.imgbatch.router import router as imgbatch_router
 from app.tools.stepmail.router import router as stepmail_router
 from app.tools.legalgen.router import router as legalgen_router
+from app.tools.epubcheck.router import router as epubcheck_router
 from app.admin.router import router as admin_router
 
 app.include_router(auth_router)
@@ -167,7 +169,8 @@ app.include_router(dataclean_router)
 app.include_router(imgbatch_router)
 app.include_router(stepmail_router)
 app.include_router(legalgen_router)
-# display_order=32 (jobposting), 33 (dataclean), 34 (imgbatch), 35 (stepmail), 36 (legalgen) - ToolDefinition シードは Stripe Price ID 確定後に追加
+app.include_router(epubcheck_router)
+# display_order=32 (jobposting), 33 (dataclean), 34 (imgbatch), 35 (stepmail), 36 (legalgen), 37 (epubcheck) - ToolDefinition シードは Stripe Price ID 確定後に追加
 app.include_router(community_router)
 app.include_router(admin_router)
 

@@ -68,7 +68,7 @@
     <div class="flex items-center gap-3 text-xs text-gray-500">
         <span>1ツール <span class="font-medium text-gray-700">&yen;100/月</span></span>
         <span class="text-gray-300">|</span>
-        <span>全36ツール <a href="/billing/upgrade" class="font-bold text-indigo-600 hover:underline">&yen;2,000/月（まとめてお得）</a></span>
+        <span>全37ツール <a href="/billing/upgrade" class="font-bold text-indigo-600 hover:underline">&yen;2,000/月（まとめてお得）</a></span>
     </div>
     {% endif %}
 </div>
@@ -110,6 +110,7 @@
         {"slug": "imgbatch",   "name": "画像一括加工",         "desc": "D&DでSNS9プリセットリサイズ・背景除去・ZIP一括ダウンロード",            "bg": "amber"},
         {"slug": "stepmail",   "name": "ステップメール",       "desc": "8種ビジネス目的からシリーズをAI一括生成・個別編集",                 "bg": "rose"},
         {"slug": "legalgen",   "name": "契約書・規約作成",     "desc": "7種の契約書/利用規約をAI生成・Word/PDF出力",                          "bg": "red"},
+        {"slug": "epubcheck",  "name": "EPUBバリデーター",      "desc": "KDP出版前のEPUBを17項目で即時チェック・リジェクト防止",                    "bg": "teal"},
     ] %}
     {% set icons = {
         "sales":       '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg>',
@@ -148,6 +149,7 @@
         "imgbatch":    '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M21 7v12a2 2 0 0 1-2 2H7"/><circle cx="8" cy="8" r="1.5"/><polyline points="17 12 13 8 5 16"/></svg>',
         "stepmail":    '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 4l10 9 10-9"/><path d="M6 16h4M14 16h4"/></svg>',
         "legalgen":    '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 7l-2 6h4l-2-6zM19 7l-2 6h4l-2-6z"/><path d="M5 21h14"/><path d="M3 13a2 2 0 0 0 4 0M17 13a2 2 0 0 0 4 0"/></svg>',
+        "epubcheck":   '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 10l2 2 4-4"/></svg>',
     } %}
     {% for card in tool_cards %}
     {% set has_access = user.has_full_access or card.slug in subscribed_tools %}
