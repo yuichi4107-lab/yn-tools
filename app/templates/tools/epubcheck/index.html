@@ -76,7 +76,7 @@
                 d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         <p class="text-gray-600 font-medium mb-1" id="dropText">EPUBファイルをドロップ またはクリックして選択</p>
-        <p class="text-xs text-gray-400">.epub のみ対応 ／ 最大 200MB</p>
+        <p class="text-xs text-gray-400">.epub のみ対応 ／ 最大 500MB</p>
         <input type="file" id="fileInput" accept=".epub" class="hidden">
     </div>
 
@@ -213,7 +213,7 @@
 </div>
 
 <script>
-const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 let selectedFile = null;
 
 /* ===== ファイル選択 / ドロップ ===== */
@@ -244,7 +244,7 @@ function handleFile(f) {
     }
     // サイズチェック
     if (f.size > MAX_FILE_SIZE) {
-        showClientError(`ファイルサイズが200MBを超えています（${formatBytes(f.size)}）。`);
+        showClientError(`ファイルサイズが500MBを超えています（${formatBytes(f.size)}）。`);
         return;
     }
     selectedFile = f;
@@ -286,7 +286,7 @@ async function runValidate() {
         });
 
         if (res.status === 413) {
-            throw new Error('ファイルサイズが200MBを超えているためアップロードできません。');
+            throw new Error('ファイルサイズが500MBを超えているためアップロードできません。');
         }
         if (!res.ok) {
             let detail = `サーバーエラー (${res.status})`;

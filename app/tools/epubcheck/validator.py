@@ -843,16 +843,16 @@ def _check_file_size_warning(file_size_bytes: int) -> dict:
     """
     file_size_warning: ファイルサイズに応じて pass / warn / fail を返す。
     - < 50MB: pass
-    - 50MB 以上 200MB 未満: warn（DL 負荷）
-    - >= 200MB: fail（KDP 制限に迫る）
+    - 50MB 以上 500MB 未満: warn（DL 負荷）
+    - >= 500MB: fail（KDP 制限に迫る）
     """
     mb = file_size_bytes / 1024 / 1024
 
-    if mb >= 200:
+    if mb >= 500:
         return _make_check(
             "file_size_warning", "KDP 特化チェック", "ファイルサイズ",
             "fail",
-            f"ファイルサイズが KDP の制限（200MB）に達しています: {mb:.1f} MB。"
+            f"ファイルサイズが KDP の上限（500MB 級）に達しています: {mb:.1f} MB。"
             "画像を圧縮するか、ファイルを分割してください。",
             detail=f"{mb:.1f} MB"
         )
@@ -861,7 +861,7 @@ def _check_file_size_warning(file_size_bytes: int) -> dict:
             "file_size_warning", "KDP 特化チェック", "ファイルサイズ",
             "warn",
             f"ファイルサイズが大きめです: {mb:.1f} MB。"
-            "読者のダウンロード負荷が高くなる可能性があります（KDP 制限: 200MB）。",
+            "読者のダウンロード負荷が高くなる可能性があります（KDP の実用上限: 500MB 程度）。",
             detail=f"{mb:.1f} MB"
         )
 

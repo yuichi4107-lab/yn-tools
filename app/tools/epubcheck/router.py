@@ -11,7 +11,7 @@ from app.tools.epubcheck.validator import validate_epub
 router = APIRouter(prefix="/tools/epubcheck", tags=["epubcheck"])
 templates = Jinja2Templates(directory="app/templates")
 
-MAX_FILE_SIZE = 200 * 1024 * 1024  # 200MB
+MAX_FILE_SIZE = 500 * 1024 * 1024  # 500MB
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -51,7 +51,7 @@ async def api_validate(
             if cl > MAX_FILE_SIZE:
                 raise HTTPException(
                     status_code=413,
-                    detail="ファイルサイズが200MBを超えています",
+                    detail="ファイルサイズが500MBを超えています",
                 )
         except ValueError:
             pass
@@ -67,7 +67,7 @@ async def api_validate(
         del file_bytes
         raise HTTPException(
             status_code=413,
-            detail="ファイルサイズが200MBを超えています",
+            detail="ファイルサイズが500MBを超えています",
         )
 
     # バリデーション実行
