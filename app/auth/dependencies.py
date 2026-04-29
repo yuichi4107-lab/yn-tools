@@ -17,7 +17,11 @@ async def get_current_user(
     if not user_id:
         return None
     result = await db.execute(select(User).where(User.id == user_id))
-    return result.scalar_one_or_none()
+    user = result.scalar_one_or_none()
+    # is_active=False のユーザーは未ログイン扱いにする（強制ログアウト対応）
+    if user and not user.is_active:
+        return None
+    return user
 
 
 async def require_login(

@@ -126,6 +126,7 @@ from app.tools.dataclean.router import router as dataclean_router
 from app.tools.imgbatch.router import router as imgbatch_router
 from app.tools.stepmail.router import router as stepmail_router
 from app.tools.legalgen.router import router as legalgen_router
+from app.admin.router import router as admin_router
 
 app.include_router(auth_router)
 app.include_router(billing_router)
@@ -168,6 +169,7 @@ app.include_router(stepmail_router)
 app.include_router(legalgen_router)
 # display_order=32 (jobposting), 33 (dataclean), 34 (imgbatch), 35 (stepmail), 36 (legalgen) - ToolDefinition シードは Stripe Price ID 確定後に追加
 app.include_router(community_router)
+app.include_router(admin_router)
 
 templates = Jinja2Templates(directory="app/templates")
 

@@ -27,6 +27,8 @@ class User(Base):
 
     @property
     def has_active_plan(self) -> bool:
+        if self.is_admin:
+            return True
         if self.plan in ("pro", "all_tools", "per_tool"):
             return True
         if self.trial_ends_at and self.trial_ends_at > datetime.utcnow():
@@ -35,7 +37,9 @@ class User(Base):
 
     @property
     def has_full_access(self) -> bool:
-        """全ツールにアクセス可能か（全ツールプラン/旧Pro/トライアル中）"""
+        """全ツールにアクセス可能か（管理者/全ツールプラン/旧Pro/トライアル中）"""
+        if self.is_admin:
+            return True
         if self.plan in ("pro", "all_tools"):
             return True
         if self.trial_ends_at and self.trial_ends_at > datetime.utcnow():
