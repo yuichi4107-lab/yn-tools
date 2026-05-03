@@ -4,7 +4,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,7 +16,7 @@ from .models import SnsPost
 from . import service
 
 router = APIRouter(prefix="/tools/sns", tags=["sns"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

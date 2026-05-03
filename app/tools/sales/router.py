@@ -9,7 +9,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -28,7 +28,7 @@ from app.tools.sales.services.hp_crawler import crawl_website
 from app.users.models import User
 
 router = APIRouter(prefix="/tools/sales", tags=["sales"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 P = "/tools/sales"  # URL prefix shorthand
 

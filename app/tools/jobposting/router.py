@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +16,7 @@ from . import service
 from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/jobposting", tags=["jobposting"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

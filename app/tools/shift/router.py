@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +15,7 @@ from app.users.models import User
 from .models import ShiftEmployee, ShiftTemplate, ShiftSchedule, ShiftRequest, ShiftAssignment
 
 router = APIRouter(prefix="/tools/shift", tags=["shift"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 # ---------------------------------------------------------------------------

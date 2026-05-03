@@ -5,7 +5,7 @@ import secrets
 
 from fastapi import APIRouter, Depends, Form as FastForm, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +15,7 @@ from app.users.models import User
 from .models import Form, FormResponse
 
 router = APIRouter(prefix="/tools/formbuilder", tags=["formbuilder"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

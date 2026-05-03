@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.auth.dependencies import get_current_user
@@ -174,7 +174,7 @@ app.include_router(epubcheck_router)
 app.include_router(community_router)
 app.include_router(admin_router)
 
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @app.get("/guide", response_class=HTMLResponse)

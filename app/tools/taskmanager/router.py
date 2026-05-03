@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, func, case
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from app.users.models import User
 from .models import Task
 
 router = APIRouter(prefix="/tools/taskmanager", tags=["taskmanager"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

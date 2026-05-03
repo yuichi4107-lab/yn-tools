@@ -4,7 +4,7 @@ import json
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,7 @@ from . import service
 from app.tools.usage_limit import get_monthly_usage, get_limit, limit_error
 
 router = APIRouter(prefix="/tools/imagegen", tags=["imagegen"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 # ---------- UI ----------

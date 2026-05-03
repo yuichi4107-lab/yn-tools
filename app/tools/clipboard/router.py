@@ -6,14 +6,14 @@ from typing import Dict, Set
 
 from fastapi import APIRouter, Depends, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 
 from app.auth.dependencies import get_current_user, require_tool_access
 from app.database import get_db
 from app.users.models import User
 
 router = APIRouter(prefix="/tools/clipboard", tags=["clipboard"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 # --- In-memory room store (ephemeral, no DB needed) ---
 

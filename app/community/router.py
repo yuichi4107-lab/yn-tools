@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from app.community.models import AppRequest, AppRequestVote, Feedback, Review
 from app.users.models import User
 
 router = APIRouter(prefix="/community", tags=["community"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 TOOLS = [
     {"slug": "sales",       "name": "営業自動化"},

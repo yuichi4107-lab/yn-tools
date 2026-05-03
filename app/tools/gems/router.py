@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,7 +13,7 @@ from app.tools.gems.service import get_categories, get_user_favorite_ids, search
 from app.users.models import User
 
 router = APIRouter(prefix="/tools/gems", tags=["gems"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 # ---------------------------------------------------------------------------

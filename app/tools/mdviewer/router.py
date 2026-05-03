@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 
 from app.auth.dependencies import require_tool_access
 from app.users.models import User
 
 router = APIRouter(prefix="/tools/mdviewer", tags=["mdviewer"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

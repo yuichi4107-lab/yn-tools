@@ -2,14 +2,14 @@
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 
 from app.auth.dependencies import require_tool_access
 from app.users.models import User
 from app.tools.epubcheck.validator import validate_epub
 
 router = APIRouter(prefix="/tools/epubcheck", tags=["epubcheck"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 MAX_FILE_SIZE = 500 * 1024 * 1024  # 500MB
 

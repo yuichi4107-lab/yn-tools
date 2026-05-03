@@ -5,7 +5,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,7 @@ from . import service
 from .models import DataCleanJob
 
 router = APIRouter(prefix="/tools/dataclean", tags=["dataclean"])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 

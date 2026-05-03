@@ -3,7 +3,7 @@
 import stripe
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.core.templates import make_templates
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,7 +29,7 @@ def _block_in_demo() -> None:
 
 
 router = APIRouter(prefix="/billing", tags=["billing"], dependencies=[Depends(_block_in_demo)])
-templates = Jinja2Templates(directory="app/templates")
+templates = make_templates("app/templates")
 
 
 @router.get("/upgrade", response_class=HTMLResponse)
