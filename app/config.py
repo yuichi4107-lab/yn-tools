@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     # Trial
     trial_days: int = 30
 
+    # Demo mode (DEMO_MODE=true for seminar/public demo at demo.ynfactory.online)
+    demo_mode: bool = False
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
     @model_validator(mode="after")
