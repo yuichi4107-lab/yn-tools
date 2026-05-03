@@ -23,7 +23,12 @@ from app.config import settings
 from app.database import get_db
 from app.users.models import ToolDefinition, User
 
-router = APIRouter(prefix="/billing", tags=["billing"])
+def _block_in_demo() -> None:
+    if settings.demo_mode:
+        raise HTTPException(status_code=404, detail="not_found")
+
+
+router = APIRouter(prefix="/billing", tags=["billing"], dependencies=[Depends(_block_in_demo)])
 templates = Jinja2Templates(directory="app/templates")
 
 

@@ -55,3 +55,19 @@ def test_require_login_returns_guest_in_demo_mode(monkeypatch):
     user = asyncio.run(dependencies.require_login(user=None))
     assert user is not None
     assert user.email == "guest@demo.ynfactory.online"
+
+
+def test_billing_router_returns_404_in_demo_mode(monkeypatch):
+    monkeypatch.setenv("DEMO_MODE", "true")
+    from app import config
+    importlib.reload(config)
+    from app.billing import router as billing_router_mod
+    importlib.reload(billing_router_mod)
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    app = FastAPI()
+    app.include_router(billing_router_mod.router)
+    client = TestClient(app)
+    res = client.post("/billing/webhook")
+    assert res.status_code == 404
