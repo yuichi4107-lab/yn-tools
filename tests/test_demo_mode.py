@@ -1,5 +1,6 @@
 """Tests for DEMO_MODE helper and settings."""
 
+import asyncio
 import importlib
 
 import pytest
@@ -27,3 +28,30 @@ def test_guest_user_has_full_access(monkeypatch):
     assert GUEST_USER.has_full_access is True
     assert GUEST_USER.is_admin is False
     assert GUEST_USER.email == "guest@demo.ynfactory.online"
+
+
+def test_get_current_user_returns_guest_in_demo_mode(monkeypatch):
+    monkeypatch.setenv("DEMO_MODE", "true")
+    from app import config
+    importlib.reload(config)
+    from app.auth import dependencies
+    importlib.reload(dependencies)
+
+    class _FakeRequest:
+        session: dict = {}
+
+    user = asyncio.run(dependencies.get_current_user(_FakeRequest(), db=None))
+    assert user is not None
+    assert user.email == "guest@demo.ynfactory.online"
+
+
+def test_require_login_returns_guest_in_demo_mode(monkeypatch):
+    monkeypatch.setenv("DEMO_MODE", "true")
+    from app import config
+    importlib.reload(config)
+    from app.auth import dependencies
+    importlib.reload(dependencies)
+
+    user = asyncio.run(dependencies.require_login(user=None))
+    assert user is not None
+    assert user.email == "guest@demo.ynfactory.online"
