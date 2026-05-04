@@ -17,5 +17,5 @@ services:
       - DEMO_MODE=true
       - APP_ENV=demo
       # DATABASE_URL is overridden to in-memory by app code, but set a stub for safety.
-      - DATABASE_URL=sqlite+aiosqlite:///:memory:
+      - "DATABASE_URL=sqlite+aiosqlite:///:memory:"
       # Stripe / Google OAuth keys intentionally absent.
