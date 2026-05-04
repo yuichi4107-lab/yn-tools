@@ -71,3 +71,14 @@ def test_billing_router_returns_404_in_demo_mode(monkeypatch):
     client = TestClient(app)
     res = client.post("/billing/webhook")
     assert res.status_code == 404
+
+
+def test_database_url_forced_to_inmemory_in_demo_mode(monkeypatch):
+    monkeypatch.setenv("DEMO_MODE", "true")
+    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://user:pw@host/db")
+    from app import config
+    importlib.reload(config)
+    from app import database
+    importlib.reload(database)
+    assert "sqlite" in database.effective_database_url()
+    assert ":memory:" in database.effective_database_url()

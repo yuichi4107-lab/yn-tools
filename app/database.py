@@ -5,8 +5,15 @@ from sqlalchemy.pool import NullPool
 from app.config import settings
 
 
+def effective_database_url() -> str:
+    """Return the DB URL to actually use, forcing in-memory SQLite under DEMO_MODE."""
+    if settings.demo_mode:
+        return "sqlite+aiosqlite:///:memory:"
+    return settings.database_url
+
+
 def _build_engine():
-    url = settings.database_url
+    url = effective_database_url()
     kwargs = {"echo": settings.app_env == "development"}
     if url.startswith("postgresql"):
         kwargs["poolclass"] = NullPool
