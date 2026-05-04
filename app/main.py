@@ -204,6 +204,13 @@ async def health_check():
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request, user=Depends(get_current_user)):
     """Landing page (top) or redirect to dashboard if logged in."""
+    if settings.demo_mode:
+        from fastapi.responses import RedirectResponse
+        if request.query_params.get("skip") == "1":
+            return RedirectResponse(url="/dashboard", status_code=303)
+        return templates.TemplateResponse(
+            request, "landing_demo.html", {"user": user}
+        )
     if user:
         from fastapi.responses import RedirectResponse
         return RedirectResponse(url="/dashboard", status_code=303)
