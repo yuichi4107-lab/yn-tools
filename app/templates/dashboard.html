@@ -2,9 +2,16 @@
 {% block title %}ダッシュボード - YN Tools{% endblock %}
 
 {% block content %}
+{% if demo_mode %}
+<div class="demo-notice" style="background:#fff8d6;border:1px solid #ffd84d;padding:0.8rem 1rem;border-radius:6px;margin-bottom:1rem;">
+  これはセミナー用デモです。全ツールが無料で試せます（データはセッション中のみ保持）。
+</div>
+{% endif %}
 <div class="mb-8 animate-fade-in">
     <h1 class="text-2xl font-bold text-gray-900">こんにちは、{{ user.name }}さん</h1>
-    {% if user.is_in_trial %}
+    {% if demo_mode %}
+    {# デモモード: プラン表記・課金情報は非表示 #}
+    {% elif user.is_in_trial %}
     <p class="text-indigo-600 mt-1 text-sm">Freeプラン（{{ user.trial_ends_at.strftime('%Y年%m月%d日') }} まで / すべてのツールが利用可能）</p>
     {% if user.has_paid_plan_during_trial and paid_start_date %}
     <p class="text-gray-500 mt-1 text-xs">
@@ -64,7 +71,7 @@
 <!-- Tools Grid -->
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
     <h2 class="text-lg font-bold text-gray-700">ツール</h2>
-    {% if user.plan != "all_tools" %}
+    {% if user.plan != "all_tools" and not demo_mode %}
     <div class="flex items-center gap-3 text-xs text-gray-500">
         <span>1ツール <span class="font-medium text-gray-700">&yen;100/月</span></span>
         <span class="text-gray-300">|</span>
@@ -152,13 +159,13 @@
         "epubcheck":   '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 10l2 2 4-4"/></svg>',
     } %}
     {% for card in tool_cards %}
-    {% set has_access = user.has_full_access or card.slug in subscribed_tools %}
+    {% set has_access = user.has_full_access or card.slug in subscribed_tools or demo_mode %}
     {% if has_access %}
     <a href="/tools/{{ card.slug }}/" class="block bg-white rounded-xl shadow-sm border p-5 card-hover group stagger-item">
         <div class="w-11 h-11 bg-{{ card.bg }}-100 rounded-xl flex items-center justify-center mb-3 text-{{ card.bg }}-600 group-hover:bg-{{ card.bg }}-200 transition">{{ icons[card.slug] | safe }}</div>
         <h3 class="font-bold group-hover:text-{{ card.bg }}-600 transition">{{ card.name }}</h3>
         <p class="text-gray-500 text-xs mt-1 mb-3">{{ card.desc }}</p>
-        <p class="text-indigo-600 text-xs font-medium">&yen;100/月</p>
+        {% if not demo_mode %}<p class="text-indigo-600 text-xs font-medium">&yen;100/月</p>{% endif %}
     </a>
     {% else %}
     <div class="relative bg-white rounded-xl shadow-sm border p-5 stagger-item opacity-75">
@@ -168,9 +175,11 @@
         <div class="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center mb-3 text-gray-300">{{ icons[card.slug] | safe }}</div>
         <h3 class="font-bold text-gray-400">{{ card.name }}</h3>
         <p class="text-gray-400 text-xs mt-1 mb-3">{{ card.desc }}</p>
+        {% if not demo_mode %}
         <a href="/billing/upgrade" class="text-xs text-indigo-600 font-medium hover:underline">
             &yen;100/月で利用開始 &rarr;
         </a>
+        {% endif %}
     </div>
     {% endif %}
     {% endfor %}
