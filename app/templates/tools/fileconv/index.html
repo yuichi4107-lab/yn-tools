@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}ファイル変換ツール - YN Tools{% endblock %}
 
+{% block head %}
+<!-- HEIC入力デコード用ライブラリ -->
+<script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<!-- HEIC出力エンコード用ライブラリ（WASM版） -->
+<script src="https://unpkg.com/libheif-js@1.18.2/libheif/libheif.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
@@ -23,13 +30,14 @@
             </div>
             <h2 class="font-bold text-gray-900">画像フォーマット変換</h2>
         </div>
-        <p class="text-xs text-gray-500 mb-4">PNG / JPEG / WebP 間で変換</p>
-        <input type="file" id="imgInput" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 mb-3">
+        <p class="text-xs text-gray-500 mb-4">PNG / JPEG / WebP / HEIC 間で変換</p>
+        <input type="file" id="imgInput" accept="image/*,.heic,.heif,image/heic,image/heif" class="block w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 mb-3">
         <div class="flex gap-2 mb-3">
             <select id="imgFormat" class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm">
                 <option value="image/png">PNG</option>
                 <option value="image/jpeg">JPEG</option>
                 <option value="image/webp">WebP</option>
+                <option value="image/heic">HEIC (実験的)</option>
             </select>
             <input type="number" id="imgQuality" min="10" max="100" value="90" class="w-20 rounded-lg border border-gray-300 px-3 py-2 text-sm" title="品質 (%)">
         </div>
@@ -83,40 +91,106 @@
 
 <script>
 /* ===== 画像変換 ===== */
-function convertImage() {
+async function convertImage() {
+    const statusEl = document.getElementById('imgStatus');
     const input = document.getElementById('imgInput');
     if (!input.files[0]) { alert('画像を選択してください'); return; }
     const file = input.files[0];
     const format = document.getElementById('imgFormat').value;
     const quality = parseInt(document.getElementById('imgQuality').value) / 100;
-    const ext = {['image/png']: 'png', ['image/jpeg']: 'jpg', ['image/webp']: 'webp'}[format];
+    const qualityPct = parseInt(document.getElementById('imgQuality').value);
+    const extMap = {'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/heic': 'heic'};
+    const ext = extMap[format] || 'png';
 
-    const reader = new FileReader();
-    reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            if (format === 'image/jpeg') {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+    statusEl.textContent = '変換中...';
+
+    try {
+        // HEIC入力判定: MIMEタイプまたはファイル拡張子で判定
+        const isHeicInput = file.type === 'image/heic' || file.type === 'image/heif' ||
+                            /\.(heic|heif)$/i.test(file.name);
+
+        let sourceBlob = file;
+
+        // HEIC入力の場合は heic2any でPNG Blobにデコードする
+        if (isHeicInput) {
+            if (typeof heic2any === 'undefined') {
+                statusEl.textContent = 'エラー: HEICデコードライブラリが読み込まれていません';
+                return;
             }
-            ctx.drawImage(img, 0, 0);
-            canvas.toBlob(blob => {
+            try {
+                sourceBlob = await heic2any({ blob: file, toType: 'image/png', quality: 1.0 });
+                // heic2any が配列を返す場合があるので最初の要素を使う
+                if (Array.isArray(sourceBlob)) sourceBlob = sourceBlob[0];
+            } catch (decodeErr) {
+                statusEl.textContent = 'エラー: HEICのデコードに失敗しました — ' + decodeErr.message;
+                return;
+            }
+        }
+
+        // Blob を Image に読み込んでキャンバスに描画する
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
+            reader.readAsDataURL(sourceBlob);
+        });
+
+        const img = await new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = () => reject(new Error('画像のデコードに失敗しました'));
+            image.src = dataUrl;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (format === 'image/jpeg') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(img, 0, 0);
+
+        // HEIC出力の場合は libheif-js のエンコーダを使用する（実験的）
+        if (format === 'image/heic') {
+            if (typeof libheif === 'undefined') {
+                statusEl.textContent = 'エラー: HEICエンコードライブラリが読み込まれていません';
+                return;
+            }
+            try {
+                const encoder = new libheif.HeifEncoder();
+                encoder.setQuality(qualityPct);
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const result = await encoder.encode(imgData);
+                const blob = new Blob([result], {type: 'image/heic'});
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
                 const base = file.name.replace(/\.[^.]+$/, '');
                 a.download = `${base}.${ext}`;
                 a.click();
                 const kb = (blob.size / 1024).toFixed(1);
-                document.getElementById('imgStatus').textContent = `変換完了 (${img.width}x${img.height}, ${kb}KB)`;
-            }, format, quality);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+                statusEl.textContent = `変換完了 (${img.width}x${img.height}, ${kb}KB)`;
+            } catch (encodeErr) {
+                statusEl.textContent = 'エラー: HEICエンコードに対応していません — ' + encodeErr.message;
+            }
+            return;
+        }
+
+        // 通常出力（PNG / JPEG / WebP）: canvas.toBlob 経路
+        canvas.toBlob(blob => {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            const base = file.name.replace(/\.[^.]+$/, '');
+            a.download = `${base}.${ext}`;
+            a.click();
+            const kb = (blob.size / 1024).toFixed(1);
+            statusEl.textContent = `変換完了 (${img.width}x${img.height}, ${kb}KB)`;
+        }, format, quality);
+
+    } catch (err) {
+        statusEl.textContent = 'エラー: ' + err.message;
+    }
 }
 
 /* ===== CSV ↔ JSON ===== */
