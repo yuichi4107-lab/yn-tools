@@ -6,6 +6,14 @@
 <script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <!-- HEIC出力エンコード用ライブラリ（WASM版） -->
 <script src="https://unpkg.com/libheif-js@1.18.2/libheif/libheif.js"></script>
+<script>
+let libheifReady = false;
+if (typeof libheif !== 'undefined' && libheif.onRuntimeInitialized !== undefined) {
+    libheif.onRuntimeInitialized = () => { libheifReady = true; };
+} else {
+    libheifReady = true;
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -158,6 +166,10 @@ async function convertImage() {
                 statusEl.textContent = 'エラー: HEICエンコードライブラリが読み込まれていません';
                 return;
             }
+            if (!libheifReady) {
+                statusEl.textContent = 'ライブラリ初期化中です。しばらくお待ちください';
+                return;
+            }
             try {
                 const encoder = new libheif.HeifEncoder();
                 encoder.setQuality(qualityPct);
@@ -178,15 +190,16 @@ async function convertImage() {
         }
 
         // 通常出力（PNG / JPEG / WebP）: canvas.toBlob 経路
-        canvas.toBlob(blob => {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            const base = file.name.replace(/\.[^.]+$/, '');
-            a.download = `${base}.${ext}`;
-            a.click();
-            const kb = (blob.size / 1024).toFixed(1);
-            statusEl.textContent = `変換完了 (${img.width}x${img.height}, ${kb}KB)`;
-        }, format, quality);
+        const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, format, quality);
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        const base = file.name.replace(/\.[^.]+$/, '');
+        a.download = `${base}.${ext}`;
+        a.click();
+        const kb = (blob.size / 1024).toFixed(1);
+        statusEl.textContent = `変換完了 (${img.width}x${img.height}, ${kb}KB)`;
 
     } catch (err) {
         statusEl.textContent = 'エラー: ' + err.message;
